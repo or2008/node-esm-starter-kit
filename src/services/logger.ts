@@ -25,8 +25,8 @@ const transport = pino.transport({
                 host: 'https://logs-prod-eu-west-0.grafana.net',
 
                 basicAuth: {
-                    username: '304642',
-                    password: 'eyJrIjoiMmFiNjYyNTZlZjJmYzU1NzQ2NjBkZmRmMjhmNjQyNWE0MjlhYTlhMiIsIm4iOiJzbmlwZXItYm90IiwiaWQiOjcyNzA0OX0',
+                    username: '',
+                    password: '',
                 },
             }
         }
