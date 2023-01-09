@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "lib": [
+            "esnext"
+        ],
+        "module": "esnext",
+        "target": "esnext",
+        "types": [
+            "node"
+        ],
+        "resolveJsonModule": true,
+        "moduleResolution": "node16",
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "strictNullChecks": true,
+        "allowJs": false,
+        "noImplicitAny": true,
+        "exactOptionalPropertyTypes": true,
+        "esModuleInterop": true,
+        "baseUrl": ".",
+    },
+	"ts-node": {
+		"transpileOnly": true,
+		"files": true,
+		"experimentalResolver": true
+	}
+}

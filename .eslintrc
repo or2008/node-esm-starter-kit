@@ -1,0 +1,92 @@
+{
+    "root": true,
+    "extends": [
+        "hardcore",
+        "hardcore/ts",
+        "hardcore/fp"
+    ],
+    "parserOptions": {
+        "project": "./tsconfig.json"
+    },
+    "plugins": [
+        "putout"
+    ],
+    "rules": {
+        "putout/putout": "off",
+        "prettier/prettier": "off",
+        "etc/no-commented-out-code": "off",
+        // "no-console": "off",
+        "indent": ["error", 4],
+        "quotes": "off",
+        "@typescript-eslint/quotes": [2, "single", { "avoidEscape": true }],
+        "arrow-body-style": ["error", "as-needed"],
+        "arrow-parens": ["error", "as-needed"],
+        "no-inline-comments": "off",
+        "curly": [2, "multi-or-nest", "consistent"],
+        "consistent-return": "off",
+        "line-comment-position": "off",
+        "import/exports-last": "off",
+        "import/prefer-default-export": "off",
+        "camelcase": "off",
+        "@typescript-eslint/semi": "error",
+        "@typescript-eslint/member-delimiter-style": "error",
+        "etc/no-t": "off",
+        "max-len": ["error", { "ignoreComments": true, "code": 150 }],
+        "no-new": "off",
+        "promise/avoid-new": "off",
+        "return-await": "off",
+        "no-magic-numbers": "off",
+        "fp/no-mutating-methods": "off",
+        "fp/no-mutation": "off",
+        "fp/no-let": "off",
+        "unicorn/no-empty-file": "off",
+        "no-warning-comments": "off",
+        "unicorn/prevent-abbreviations": "off",
+        "unicorn/prefer-top-level-await": "off",
+        "unicorn/no-null": "off",
+        "import/unambiguous": "off",
+        "import/extensions": "off",
+        "import/no-unused-modules": "warn",
+        "@typescript-eslint/no-magic-numbers": "off",
+        "@typescript-eslint/consistent-type-assertions": "off",
+        "@typescript-eslint/no-confusing-void-expression": ["error", { "ignoreArrowShorthand": true }],
+        "@typescript-eslint/no-floating-promises": "off",
+        "@typescript-eslint/prefer-readonly-parameter-types": "off",
+        "@typescript-eslint/return-await": "off",
+        "@typescript-eslint/require-await": "off",
+        "@typescript-eslint/no-namespace": "error",
+        "@typescript-eslint/prefer-optional-chain": "off",
+        "@typescript-eslint/method-signature-style": "off",
+        "@typescript-eslint/consistent-indexed-object-style": ["error", "record"],
+        "@typescript-eslint/naming-convention": [
+            "error",
+            {
+              "selector": "variable",
+              "types": ["boolean"],
+              "format": ["PascalCase"],
+              "prefix": ["is", "should", "has", "can", "did", "will"]
+            },
+            {
+                "selector": "variable",
+                "format": ["camelCase", "UPPER_CASE"]
+            },
+            {
+                "selector": "parameter",
+                "format": ["camelCase"],
+                "leadingUnderscore": "allow"
+            },
+            {
+                "selector": "memberLike",
+                "modifiers": ["private"],
+                "format": ["camelCase"],
+                "leadingUnderscore": "require"
+            },
+
+            {
+                "selector": "typeLike",
+                "format": ["PascalCase"]
+            }
+        ],
+        "@typescript-eslint/no-misused-promises": ["error", { "checksVoidReturn": false }]
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "src/**/*.{js,ts,tsx,scss,css,md}": [
+        "npm run lint:fix"
+    ],
+    "package.json": [
+        "npm run lint:package.json"
+    ]
+}
