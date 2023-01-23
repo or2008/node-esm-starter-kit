@@ -3,6 +3,10 @@ declare global {
         interface ProcessEnv {
             NODE_ENV: 'development' | 'production';
             TELEGRAM_BOT_TOKEN: string;
+            TELEGRAM_ADMIN_CHAT_ID: string;
+            GOOGLE_API_KEY: string;
+            NLPCLOUD_API_KEY: string;
+            OPENAI_API_KEY: string;
         }
     }
 }

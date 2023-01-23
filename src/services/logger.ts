@@ -14,26 +14,31 @@ const transport = pino.transport({
                 ignore: 'pid,hostname'
             }
         },
-        {
-            target: 'pino-loki',
 
-            level: 'info',
+        // {
+        //     target: 'pino-loki',
 
-            options: {
-                batching: true,
-                interval: 5,
-                host: 'https://logs-prod-eu-west-0.grafana.net',
+        //     level: 'info',
 
-                basicAuth: {
-                    username: '',
-                    password: '',
-                },
-            }
-        }
+        //     options: {
+        //         batching: true,
+        //         interval: 5,
+        //         host: 'https://logs-prod-eu-west-0.grafana.net',
+
+        //         basicAuth: {
+        //             username: '',
+        //             password: '',
+        //         },
+        //     }
+        // }
     ]
-}) as unknown as LoggerOptions; // https://github.com/pinojs/thread-stream/issues/24
+}) as LoggerOptions; // https://github.com/pinojs/thread-stream/issues/24
 
 export const logger = pino(transport);
 
 logger.level = 'trace';
 logger.info('Using pinojs/pino: 🌲 super fast, all natural json logger.');
+
+export function printObject(obj: Record<string, unknown>) {
+    return JSON.stringify(obj, null, 4);
+}

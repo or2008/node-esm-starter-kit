@@ -1,7 +1,7 @@
-import { getBot, sendMessage } from './services/telegram.js';
+import { getBot, sendAdminMessage } from './services/telegram.js';
 
 async function onStopCommand() {
-    await sendMessage('process.exit..');
+    await sendAdminMessage('process.exit..');
     process.exit();
 }
 
