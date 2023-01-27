@@ -20,3 +20,11 @@ export function getOpenAiApiKey() {
     return process.env.OPENAI_API_KEY;
 }
 
+export function getChatGptEmail() {
+    return process.env.OPENAI_EMAIL;
+}
+
+export function getChatGptPassword() {
+    return process.env.OPENAI_PASSWORD;
+}
+

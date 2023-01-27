@@ -9,7 +9,7 @@
             "node"
         ],
         "resolveJsonModule": true,
-        "moduleResolution": "node16",
+        "moduleResolution": "nodenext",
         "forceConsistentCasingInFileNames": true,
         "strict": true,
         "strictNullChecks": true,

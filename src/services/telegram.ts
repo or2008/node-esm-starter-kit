@@ -1,4 +1,3 @@
-import { type ExtraReplyMessage } from 'node_modules/telegraf/typings/telegram-types.js';
 import { Telegraf } from 'telegraf';
 
 import { getTelegramAdminChatId, getTelegramBotToken } from '../config.js';
@@ -9,11 +8,11 @@ export function getBot() {
     return bot;
 }
 
-export async function sendMessage(chatId: string, text: string, extra?:  ExtraReplyMessage) {
-    return bot.telegram.sendMessage(chatId, text, extra);
+export async function sendMessage(chatId: string, text: string) {
+    return bot.telegram.sendMessage(chatId, text);
 }
 
-export async function sendAdminMessage(text: string, extra?: ExtraReplyMessage) {
+export async function sendAdminMessage(text: string) {
     const chatId = getTelegramAdminChatId();
-    return bot.telegram.sendMessage(chatId, text, extra);
+    return bot.telegram.sendMessage(chatId, text,);
 }
