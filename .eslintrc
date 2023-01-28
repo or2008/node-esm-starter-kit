@@ -74,7 +74,7 @@
             },
             {
                 "selector": "variable",
-                "format": ["camelCase", "UPPER_CASE"]
+                "format": ["camelCase", "UPPER_CASE", "snake_case"]
             },
             {
                 "selector": "parameter",
@@ -87,7 +87,11 @@
                 "format": ["camelCase"],
                 "leadingUnderscore": "require"
             },
-
+            {
+                "selector": "typeProperty",
+                "format": ["camelCase", "snake_case"],
+                "leadingUnderscore": "allow"
+            },
             {
                 "selector": "typeLike",
                 "format": ["PascalCase"]
