@@ -48,6 +48,8 @@
         "import/extensions": "off",
         "no-await-in-loop": "off",
         "fp/no-loops": "off",
+        "security/detect-unsafe-regex": "warn",
+        "unicorn/no-unsafe-regex": "warn",
         "import/no-unused-modules": "off",
         "@typescript-eslint/no-magic-numbers": "off",
         "etc/no-misused-generics": "off",
