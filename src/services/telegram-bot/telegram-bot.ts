@@ -26,6 +26,10 @@ export async function sendAdminMessage(text: string) {
     return bot.telegram.sendMessage(chatId, text,);
 }
 
+bot.catch(error => {
+    logger.error(error);
+});
+
 // Enable graceful stop
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
