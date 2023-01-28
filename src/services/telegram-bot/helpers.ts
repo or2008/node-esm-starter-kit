@@ -9,7 +9,7 @@ export function getUsernameFromContext(ctx: Context) {
 // convert https://t.me/lobsters_chat to lobsters_chat - https://regex101.com/r/wbWNpu/1
 export function getIdFromUrl(url: string) {
     const res = /(?:@|(?:https?:\/\/)?t(?:elegram)?\.me\/)(?<id>\w{3,32})$/mu.exec(url);
-    if (!res || !res.groups || res.groups.id) return '';
+    if (!res || !res.groups || !res.groups.id) return '';
 
     return res.groups.id;
 }

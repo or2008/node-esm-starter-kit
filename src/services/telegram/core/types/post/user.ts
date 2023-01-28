@@ -28,9 +28,9 @@ export interface TelegramPostUser {
     attach_menu_enabled: boolean;
     id: number;
     access_hash: number;
-    first_name: string;
-    last_name: string;
-    username: string;
+    first_name?: string;
+    last_name?: string;
+    username?: string;
 
     // photo: TelegramPostPhoto4;
 

@@ -8,7 +8,6 @@ async function init() {
     // console.log(res);
 
     initTgDstBot();
-
 }
 
 async function main() {
