@@ -37,6 +37,7 @@
         "axios": "1.2.2",
         "chatgpt": "3.5.1",
         "dotenv": "16.0.3",
+        "gpt-3-encoder": "1.1.4",
         "lowdb": "5.0.5",
         "natural": "6.1.2",
         "nlpcloud": "1.0.40",

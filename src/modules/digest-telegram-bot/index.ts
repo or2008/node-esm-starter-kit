@@ -5,11 +5,13 @@ import { type Message, type Update } from 'telegraf/types';
 
 import { CustomError } from '../../errors.js';
 import { logger } from '../../services/logger.js';
+import { getApi as getOpenAiApi } from '../../services/open-ai/open-ai.js';
 import { getIdFromUrl } from '../../services/telegram-bot/helpers.js';
-import { getBot, sendAdminMessage } from '../../services/telegram-bot/telegram-bot.js';
+import { getBot, sendAdminMessage, sendLoadingMessage } from '../../services/telegram-bot/telegram-bot.js';
 import { getPosts } from '../../services/telegram-core.js';
 import { type TelegramPostMessage, type TelegramGetPostsResponse } from '../../services/telegram/core/types/post/root-object.js';
 import { type TelegramPostUser } from '../../services/telegram/core/types/post/user.js';
+import { getTotalTokens } from '../llm/helpers.js';
 
 import { texts } from './texts.js';
 
@@ -18,17 +20,18 @@ function getUserById(users: TelegramPostUser[], userId: number) {
 }
 
 function getUserDisplayName(user: TelegramPostUser) {
-    const { username = '' } = user;
+    const { username = '', first_name = '', last_name = '', access_hash } = user;
 
-    // let displayName = ``;
-    // if (first_name)displayName = `${first_name}`;
-    // if (last_name) displayName = `${displayName} ${last_name}`;
-    // if (displayName) return `${displayName} (${username})`;
+    if (username) return `@${username}`;
+    let displayName = '';
+    if (first_name) displayName = String(first_name);
+    if (last_name) displayName = `${displayName} ${last_name}`;
+    if (displayName.trim()) return displayName;
 
-    return `@${username}`;
+    return access_hash;
 }
 
-function getUserDisplayNameFromPostsRes(postMessage: TelegramPostMessage, users: TelegramPostUser[] ) {
+function getUserDisplayNameFromPostsRes(postMessage: TelegramPostMessage, users: TelegramPostUser[]) {
     const { from_id, peer_id } = postMessage;
     if (from_id) {
         const user = getUserById(users, from_id.user_id);
@@ -44,7 +47,7 @@ function getUserDisplayNameFromPostsRes(postMessage: TelegramPostMessage, users:
 function convertToTextConversation(postsRes: TelegramGetPostsResponse) {
     const { messages, users } = postsRes;
 
-    return messages.slice(0).reverse().map(postMessage => {
+    return messages.map(postMessage => {
         const { message: msg } = postMessage;
         return `${getUserDisplayNameFromPostsRes(postMessage, users)}: ${msg}`;
     });
@@ -59,8 +62,10 @@ async function getChannelData(channelId: string) {
 // return array of messages with username prefixed in each item.
 // ie. ['@wev: Im so gever', '@rev: and Im so gay']
 async function getChannelConversation(channelId: string) {
+    logger.info(`[getChannelConversation] for channel ${channelId}..`);
     try {
-        const postsRes = await getPosts(channelId, 0, 10);
+        const postsRes = await getPosts(channelId, 0, 100);
+        logger.debug('[getChannelConversation] recevied postsRes');
         return convertToTextConversation(postsRes);
     } catch (error) {
         if (isAxiosError<Record<'errors', string>>(error)) {
@@ -73,26 +78,66 @@ async function getChannelConversation(channelId: string) {
     }
 }
 
-async function digestChannel(channelId: string, ctx: Context) {
-    const channelData = await getChannelData(channelId);
-
-    // API can Temporary ban us any error, for example: invalid channel name or private channel. so call it after channelData ready
-    const conversation = await getChannelConversation(channelId);
-
-    const { title = '', description = '' } = channelData;
+async function summarizeConversation(conversation: string, channelTitle: string, channelDescription: string) {
+    logger.info(`[summarizeConversation] conversation length: ${conversation.length}`);
 
     const prompt = `
     For the following chat group:
-    Group title: ${JSON.stringify(title)}.
-    Group description: ${JSON.stringify(description)}.
+    Group title: ${JSON.stringify(channelTitle)}.
+    Group description: ${JSON.stringify(channelDescription)}.
 
     ------
 
-    Write a recap of the discussed topics in the following array of messages, break to bullet points, and include usernames if needed:
-    ${JSON.stringify(conversation)}
-    `;
+    Write a detailed summary of the chat below as a bullet point list of the most important points, include usernames if needed:
 
-    await ctx.reply(prompt);
+    ${JSON.stringify(conversation)}`;
+
+    logger.debug(`[summarizeConversation] prompt: ${prompt}`);
+
+    try {
+        const completion = await getOpenAiApi().createCompletion({
+            model: 'text-davinci-003',
+            prompt,
+            max_tokens: 250,
+            temperature: 0.5,
+            top_p: 1,
+            frequency_penalty: 0,
+            best_of: 1
+        });
+        const res = completion.data.choices[0].text;
+        if (!res) throw new CustomError('returned empty res');
+
+        return res;
+    } catch (error: unknown) {
+        throw new CustomError('couldn\'t summarize conversation', error);
+    }
+}
+
+// Get array of messages, and cut them when reaching max tokens
+function limitMessagesUpToMaxTokens(messages: string[], maxTokens: number) {
+    const limitedMessages: string[] = [];
+    for (const msg of messages) {
+        const tokens = getTotalTokens(limitedMessages.join('\n'));
+        if (tokens > maxTokens) break;
+        limitedMessages.push(msg);
+    }
+
+    return limitedMessages;
+}
+
+async function digestChannel(channelId: string) {
+    logger.info(`[digestChannel] for channel ${channelId}..`);
+
+    const channelData = await getChannelData(channelId);
+    const { title = '', description = '' } = channelData;
+
+    // API can Temporary ban us any error, for example: invalid channel name or private channel. so call it after channelData ready
+    const conversation = await getChannelConversation(channelId);
+    const limitedConversation = limitMessagesUpToMaxTokens(conversation, 2048); // .slice(0).reverse()
+    logger.debug(`[digestChannel] limit conversation from ${conversation.length} to ${limitedConversation.length} messages..`);
+
+    const limitedConversationText = limitedConversation.slice(0).reverse().join('\n');
+    return summarizeConversation(limitedConversationText, title, description);
 }
 
 async function mapDigestChannelError(error: unknown, ctx: NarrowedContext<Context, Update.MessageUpdate<Message.TextMessage>>) {
@@ -115,9 +160,18 @@ async function mapDigestChannelError(error: unknown, ctx: NarrowedContext<Contex
 async function onTextMessage(ctx: NarrowedContext<Context, Update.MessageUpdate<Message.TextMessage>>) {
     const { text = '' } = ctx.message;
     const channelId = getIdFromUrl(text);
+    logger.debug(`[onTextMessage] channelId: ${channelId}, text: ${text}`);
+
     if (!channelId) return '';
 
-    await digestChannel(channelId, ctx).catch(async (error: unknown) => mapDigestChannelError(error, ctx));
+    const stopLoading = await sendLoadingMessage(ctx.chat.id, texts.digestingChannel);
+    const summary = await digestChannel(channelId).catch(async (error: unknown) => mapDigestChannelError(error, ctx));
+    stopLoading();
+
+    if (!summary) return;
+    await ctx.reply(summary, { disable_web_page_preview: true });
+
+    // console.log(sentMessage);
 }
 
 function subscribeToCommands() {

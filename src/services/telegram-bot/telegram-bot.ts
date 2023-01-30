@@ -17,13 +17,35 @@ bot.use(async (ctx, next) => {
     logger.debug(`[TelegramService] Processing ${ctx.updateType} update: ${ctx.update.update_id} End.`);
 });
 
-export async function sendMessage(chatId: string, text: string) {
+export async function sendMessage(chatId: number, text: string) {
     return bot.telegram.sendMessage(chatId, text);
 }
 
 export async function sendAdminMessage(text: string) {
     const chatId = getTelegramAdminChatId();
-    return bot.telegram.sendMessage(chatId, text,);
+    return bot.telegram.sendMessage(chatId, text);
+}
+
+// Append ... with animation to each message
+export async function sendLoadingMessage(chatId: number, text: string) {
+    const loadingMessage = await sendMessage(chatId, text);
+
+    const suffix = '.'; // 🤖
+    const loops = 3;
+    let loop = 0;
+    const intervalId = setInterval(async () => {
+        await bot.telegram.editMessageText(chatId, loadingMessage.message_id, '', `${text}${suffix.repeat(loop + 1)}`).catch(() => {
+            // swallow error
+        });
+        loop += 1;
+        if (loop === loops) loop = 0;
+    }, 1000);
+
+    // return stop function
+    return () => {
+        clearInterval(intervalId);
+        bot.telegram.deleteMessage(chatId, loadingMessage.message_id);
+    };
 }
 
 bot.catch(error => {
