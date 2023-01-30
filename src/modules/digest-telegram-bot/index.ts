@@ -48,7 +48,8 @@ function convertToTextConversation(postsRes: TelegramGetPostsResponse) {
     const { messages, users } = postsRes;
 
     return messages.map(postMessage => {
-        const { message: msg } = postMessage;
+        const { message: msg, _ } = postMessage;
+        if (_ === 'messageService') return '';
         return `${getUserDisplayNameFromPostsRes(postMessage, users)}: ${msg}`;
     });
 }
@@ -88,7 +89,7 @@ async function summarizeConversation(conversation: string, channelTitle: string,
 
     ------
 
-    Write a detailed summary of the chat below as a bullet point list of the most important points, include usernames if needed:
+    Write a detailed summary of the following chat as a bullet point list of the most important points, include username handles:
 
     ${JSON.stringify(conversation)}`;
 
@@ -99,7 +100,7 @@ async function summarizeConversation(conversation: string, channelTitle: string,
             model: 'text-davinci-003',
             prompt,
             max_tokens: 250,
-            temperature: 0.5,
+            temperature: 1,
             top_p: 1,
             frequency_penalty: 0,
             best_of: 1
@@ -141,7 +142,7 @@ async function digestChannel(channelId: string) {
 }
 
 async function mapDigestChannelError(error: unknown, ctx: NarrowedContext<Context, Update.MessageUpdate<Message.TextMessage>>) {
-    logger.error(`[digestChannel] ${JSON.stringify(error)}`);
+    logger.error(error);
 
     if (error instanceof CustomError) {
         if (error.message.includes('chat not found'))
@@ -160,9 +161,10 @@ async function mapDigestChannelError(error: unknown, ctx: NarrowedContext<Contex
 async function onTextMessage(ctx: NarrowedContext<Context, Update.MessageUpdate<Message.TextMessage>>) {
     const { text = '' } = ctx.message;
     const channelId = getIdFromUrl(text);
-    logger.debug(`[onTextMessage] channelId: ${channelId}, text: ${text}`);
+    logger.debug(`[onTextMessage] from ${ctx.from.username ?? ctx.from.id}: ${text}`);
 
     if (!channelId) return '';
+    sendAdminMessage(`[onTextMessage] identified channel https://t.me/${channelId}`);
 
     const stopLoading = await sendLoadingMessage(ctx.chat.id, texts.digestingChannel);
     const summary = await digestChannel(channelId).catch(async (error: unknown) => mapDigestChannelError(error, ctx));
@@ -170,8 +172,6 @@ async function onTextMessage(ctx: NarrowedContext<Context, Update.MessageUpdate<
 
     if (!summary) return;
     await ctx.reply(summary, { disable_web_page_preview: true });
-
-    // console.log(sentMessage);
 }
 
 function subscribeToCommands() {

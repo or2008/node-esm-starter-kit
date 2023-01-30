@@ -21,5 +21,6 @@ async function main() {
 main().catch((error: unknown) => {
     // if (error instanceof CustomError)
     //     logger.debug(error);
+    console.log('main().catch');
     logger.error(error);
 });

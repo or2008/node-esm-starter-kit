@@ -20,7 +20,7 @@ use /support to contact our support team for assistance with any issues or quest
     'supportMessage': `
 Contact our support team for assistance with any issues or questions regarding the Digestify bot.
 
-You can reach us via email at support@Digestify.com, or through Telegram by clicking this link t.me/DigestifySupport.
+You can reach us via email at hello@dayoff.fun, or through Telegram by clicking this link https://t.me/ewsupport.
 `,
 
     'digestingChannel': 'Thank you, channel messages are now being processed and a summary will be sent to you shortly',
