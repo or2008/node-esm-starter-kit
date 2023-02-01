@@ -8,6 +8,18 @@ export function getTelegramAdminChatId() {
     return process.env.TELEGRAM_ADMIN_CHAT_ID;
 }
 
+export function getTelegramAppId() {
+    return Number(process.env.TELEGRAM_APP_ID);
+}
+
+export function getTelegramAppHash() {
+    return process.env.TELEGRAM_APP_HASH;
+}
+
+export function getTelegramClientStringSession() {
+    return process.env.TELEGRAM_CLIENT_STRING_SESSION ?? '';
+}
+
 export function getGoogleApiKey() {
     return process.env.GOOGLE_API_KEY;
 }
@@ -18,13 +30,5 @@ export function getNlpcloudApiKey() {
 
 export function getOpenAiApiKey() {
     return process.env.OPENAI_API_KEY;
-}
-
-export function getChatGptEmail() {
-    return process.env.OPENAI_EMAIL;
-}
-
-export function getChatGptPassword() {
-    return process.env.OPENAI_PASSWORD;
 }
 

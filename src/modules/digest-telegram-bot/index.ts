@@ -2,13 +2,16 @@ import { isAxiosError } from 'axios';
 import { type Context, type NarrowedContext } from 'telegraf';
 import { message } from 'telegraf/filters';
 import { type Message, type Update } from 'telegraf/types';
+import { type Api } from 'telegram';
+import { type TotalList } from 'telegram/Helpers.js';
 
 import { CustomError } from '../../errors.js';
 import { logger } from '../../services/logger.js';
 import { getApi as getOpenAiApi } from '../../services/open-ai/open-ai.js';
 import { getIdFromUrl } from '../../services/telegram-bot/helpers.js';
 import { getBot, sendAdminMessage, sendLoadingMessage } from '../../services/telegram-bot/telegram-bot.js';
-import { getPosts } from '../../services/telegram-core.js';
+import { getUserDisplayNameFromApiMessage } from '../../services/telegram-core/helpers.js';
+import { getClient, getMessages, getPosts } from '../../services/telegram-core/telegram-core.js';
 import { type TelegramPostMessage, type TelegramGetPostsResponse } from '../../services/telegram/core/types/post/root-object.js';
 import { type TelegramPostUser } from '../../services/telegram/core/types/post/user.js';
 import { getTotalTokens } from '../llm/helpers.js';
@@ -31,26 +34,10 @@ function getUserDisplayName(user: TelegramPostUser) {
     return access_hash;
 }
 
-function getUserDisplayNameFromPostsRes(postMessage: TelegramPostMessage, users: TelegramPostUser[]) {
-    const { from_id, peer_id } = postMessage;
-    if (from_id) {
-        const user = getUserById(users, from_id.user_id);
-        if (!user) return from_id.user_id;
-        return getUserDisplayName(user);
-    };
-
-    if (peer_id) return 'Channel_Bot';
-
-    return 'unkown_user';
-}
-
-function convertToTextConversation(postsRes: TelegramGetPostsResponse) {
-    const { messages, users } = postsRes;
-
-    return messages.map(postMessage => {
-        const { message: msg, _ } = postMessage;
-        if (_ === 'messageService') return '';
-        return `${getUserDisplayNameFromPostsRes(postMessage, users)}: ${msg}`;
+function convertToTextConversation(messagesRes: TotalList<Api.Message>) {
+    return messagesRes.map(apiMessage => {
+        const { message: msg } = apiMessage;
+        return `${getUserDisplayNameFromApiMessage(apiMessage, messagesRes)}: ${msg}`;
     });
 }
 
@@ -65,12 +52,13 @@ async function getChannelData(channelId: string) {
 async function getChannelConversation(channelId: string) {
     logger.info(`[getChannelConversation] for channel ${channelId}..`);
     try {
-        const postsRes = await getPosts(channelId, 0, 100);
-        logger.debug('[getChannelConversation] recevied postsRes');
-        return convertToTextConversation(postsRes);
+        const messagesRes = await getClient().getMessages(channelId, { limit: 500 });
+        console.log(messagesRes);
+
+        return convertToTextConversation(messagesRes);
     } catch (error) {
-        if (isAxiosError<Record<'errors', string>>(error)) {
-            const errorMessage = error.response?.data.errors[0] ?? '';
+        if (isAxiosError<Record<'errors', string> | Record<string, string>>(error)) {
+            const errorMessage = error.response?.data.errors?.at(0) ?? '';
             if (errorMessage.includes('Time to unlock access'))
                 throw new CustomError('couldn\'t get channel conversation due to ban', errorMessage);
         }
@@ -128,6 +116,7 @@ function limitMessagesUpToMaxTokens(messages: string[], maxTokens: number) {
 
 async function digestChannel(channelId: string) {
     logger.info(`[digestChannel] for channel ${channelId}..`);
+    sendAdminMessage(`[digestChannel] for channel https://t.me/${channelId}`);
 
     const channelData = await getChannelData(channelId);
     const { title = '', description = '' } = channelData;
@@ -164,14 +153,14 @@ async function onTextMessage(ctx: NarrowedContext<Context, Update.MessageUpdate<
     logger.debug(`[onTextMessage] from ${ctx.from.username ?? ctx.from.id}: ${text}`);
 
     if (!channelId) return '';
-    sendAdminMessage(`[onTextMessage] identified channel https://t.me/${channelId}`);
 
     const stopLoading = await sendLoadingMessage(ctx.chat.id, texts.digestingChannel);
     const summary = await digestChannel(channelId).catch(async (error: unknown) => mapDigestChannelError(error, ctx));
     stopLoading();
 
-    if (!summary) return;
+    if (!summary) return '';
     await ctx.reply(summary, { disable_web_page_preview: true });
+    sendAdminMessage(summary);
 }
 
 function subscribeToCommands() {

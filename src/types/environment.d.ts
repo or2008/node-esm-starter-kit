@@ -4,11 +4,12 @@ declare global {
             NODE_ENV: 'development' | 'production';
             TELEGRAM_BOT_TOKEN: string;
             TELEGRAM_ADMIN_CHAT_ID: string;
+            TELEGRAM_APP_ID: string;
+            TELEGRAM_APP_HASH: string;
+            TELEGRAM_CLIENT_STRING_SESSION: string;
             GOOGLE_API_KEY: string;
             NLPCLOUD_API_KEY: string;
             OPENAI_API_KEY: string;
-            OPENAI_EMAIL: string;
-            OPENAI_PASSWORD: string;
         }
     }
 }
