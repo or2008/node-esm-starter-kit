@@ -13,6 +13,8 @@ const client = new TelegramClient(
     { connectionRetries: 5 }
 );
 
+client.connect();
+
 export function getClient() {
     return client;
 }
