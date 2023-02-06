@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 export const texts = {
     'welcomeMessage': `
 Hi there!

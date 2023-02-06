@@ -17,7 +17,7 @@ export function getTelegramAppHash() {
 }
 
 export function getTelegramClientStringSession() {
-    return process.env.TELEGRAM_CLIENT_STRING_SESSION ?? '';
+    return process.env.TELEGRAM_CLIENT_STRING_SESSION;
 }
 
 export function getGoogleApiKey() {

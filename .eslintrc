@@ -9,10 +9,10 @@
         "project": "./tsconfig.json"
     },
     "plugins": [
-        "putout"
     ],
     "rules": {
         "putout/putout": "off",
+        "regexp/regexp": "off",
         "prettier/prettier": "off",
         "etc/no-commented-out-code": "off",
         // "no-console": "off",
@@ -50,9 +50,16 @@
         "fp/no-loops": "off",
         "security/detect-unsafe-regex": "warn",
         "unicorn/no-unsafe-regex": "warn",
+        "regexp/require-unicode-regexp": "warn",
+        "regexp/prefer-named-capture-group": "warn",
+        "regexp/no-unused-capturing-group": "warn",
+        "regexp/no-useless-quantifier": "warn",
+        "prefer-named-capture-group": "warn",
+        "require-unicode-regexp": "warn",
         "import/no-unused-modules": "off",
         "@typescript-eslint/no-magic-numbers": "off",
         "etc/no-misused-generics": "off",
+        "@typescript-eslint/no-unused-vars": "warn",
         "@typescript-eslint/consistent-type-assertions": "off",
         "@typescript-eslint/no-confusing-void-expression": ["error", { "ignoreArrowShorthand": true }],
         "@typescript-eslint/no-floating-promises": "off",

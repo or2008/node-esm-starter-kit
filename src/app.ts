@@ -1,28 +1,31 @@
 
 import { init as initTgDstBot } from './modules/digest-telegram-bot/index.js';
-import { initAsUser as initTgCore } from './services/telegram-core/telegram-core.js';
 import { logger } from './services/logger.js';
-
-async function init() {
-    // await initChatGpt();
-    // const res = await getChatGptApi().sendMessage('hello')
-    // console.log(res);
-
-    initTgDstBot();
-}
 
 async function main() {
     const msg = 'Running.. 🎯🤖';
     logger.info(msg);
 
-    await initTgCore();
-    await init();
+    await initTgDstBot();
 }
-
 
 main().catch((error: unknown) => {
     // if (error instanceof CustomError)
     //     logger.debug(error);
-    console.log('main().catch');
+    logger.error('main().catch');
     logger.error(error);
+});
+
+// if the Promise is rejected this will catch it
+process.on('unhandledRejection', (error: unknown) => {
+    logger.error('unhandledRejection..');
+    logger.error(error);
+    if (error instanceof Error)
+        throw error;
+});
+
+process.on('uncaughtException', error => {
+    logger.error('uncaughtException..');
+    logger.error(error);
+
 });

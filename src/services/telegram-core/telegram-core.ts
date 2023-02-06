@@ -1,10 +1,10 @@
-import { Api, TelegramClient } from 'telegram';
+import { TelegramClient } from 'telegram';
 import { StringSession } from 'telegram/sessions/StringSession.js';
-import input from 'input';
 
-import { getTelegramAppHash, getTelegramAppId, getTelegramBotToken, getTelegramClientStringSession } from '../../config.js';
-import { CustomError } from '../../errors.js';
-import { logger } from '../logger.js';
+import { getTelegramAppHash, getTelegramAppId, getTelegramClientStringSession } from '../../config.js';
+
+// import { CustomError } from '../../errors.js';
+// import { logger } from '../logger.js';
 
 const client = new TelegramClient(
     new StringSession(getTelegramClientStringSession()),
@@ -12,31 +12,6 @@ const client = new TelegramClient(
     getTelegramAppHash(),
     { connectionRetries: 5 }
 );
-
-export async function initAsBot() {
-    logger.info('Initalzing Telegram client as bot...');
-
-    await client.start({
-        botAuthToken: getTelegramBotToken(),
-    });
-    await client.connect();
-
-    logger.info('You should now be connected.');
-    logger.info(client.session.save()); // Save this string to avoid logging in again
-}
-
-export async function initAsUser() {
-    logger.info('Initalzing Telegram client as user...');
-
-    await client.start({
-        phoneNumber: async () => await input.text('phone number?'),
-        password: async () => await input.text('password?'),
-        phoneCode: async () => await input.text('Code?'),
-        onError: err => console.log(err),
-    });
-    logger.info('You should now be connected.');
-    logger.info(client.session.save()); // Save this string to avoid logging in again
-}
 
 export function getClient() {
     return client;
@@ -52,6 +27,10 @@ export function getClient() {
 // }
 
 // return posts from public Telegram channels.
+// export async function getMessages(channelId: string, minId = 0, limit = 2) {
+//     return client.invoke(new Api.channels.GetMessages({ channel: channelId, id: [] }));
+// }
+
 export async function getMessages(channelId: string, minId = 0, limit = 2) {
     return client.getMessages(channelId, { limit, minId });
 }

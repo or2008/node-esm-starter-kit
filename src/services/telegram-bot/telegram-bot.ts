@@ -49,7 +49,7 @@ export async function sendLoadingMessage(chatId: number, text: string) {
 }
 
 bot.catch(error => {
-    console.log('bot.catch1');
+    logger.error('bot.catch1');
     logger.error(error);
 
 });

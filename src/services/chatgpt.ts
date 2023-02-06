@@ -5,6 +5,7 @@ import { getOpenAiApiKey } from '../config.js';
 import { logger } from './logger.js';
 
 const api = new ChatGPTAPI({
+    debug: true,
     apiKey: getOpenAiApiKey()
 });
 

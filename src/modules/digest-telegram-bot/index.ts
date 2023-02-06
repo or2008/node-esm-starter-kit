@@ -6,38 +6,22 @@ import { type Api } from 'telegram';
 import { type TotalList } from 'telegram/Helpers.js';
 
 import { CustomError } from '../../errors.js';
+import { getApi as getChatGptApi } from '../../services/chatgpt.js';
 import { logger } from '../../services/logger.js';
 import { getApi as getOpenAiApi } from '../../services/open-ai/open-ai.js';
 import { getIdFromUrl } from '../../services/telegram-bot/helpers.js';
 import { getBot, sendAdminMessage, sendLoadingMessage } from '../../services/telegram-bot/telegram-bot.js';
 import { getUserDisplayNameFromApiMessage } from '../../services/telegram-core/helpers.js';
-import { getClient, getMessages, getPosts } from '../../services/telegram-core/telegram-core.js';
-import { type TelegramPostMessage, type TelegramGetPostsResponse } from '../../services/telegram/core/types/post/root-object.js';
-import { type TelegramPostUser } from '../../services/telegram/core/types/post/user.js';
+import { getClient } from '../../services/telegram-core/telegram-core.js';
 import { getTotalTokens } from '../llm/helpers.js';
 
 import { texts } from './texts.js';
 
-function getUserById(users: TelegramPostUser[], userId: number) {
-    return users.find(user => userId === user.id);
-}
-
-function getUserDisplayName(user: TelegramPostUser) {
-    const { username = '', first_name = '', last_name = '', access_hash } = user;
-
-    if (username) return `@${username}`;
-    let displayName = '';
-    if (first_name) displayName = String(first_name);
-    if (last_name) displayName = `${displayName} ${last_name}`;
-    if (displayName.trim()) return displayName;
-
-    return access_hash;
-}
-
 function convertToTextConversation(messagesRes: TotalList<Api.Message>) {
     return messagesRes.map(apiMessage => {
         const { message: msg } = apiMessage;
-        return `${getUserDisplayNameFromApiMessage(apiMessage, messagesRes)}: ${msg}`;
+        const displayName = getUserDisplayNameFromApiMessage(apiMessage);
+        return `${displayName}: ${msg}`;
     });
 }
 
@@ -52,8 +36,7 @@ async function getChannelData(channelId: string) {
 async function getChannelConversation(channelId: string) {
     logger.info(`[getChannelConversation] for channel ${channelId}..`);
     try {
-        const messagesRes = await getClient().getMessages(channelId, { limit: 500 });
-        console.log(messagesRes);
+        const messagesRes = await getClient().getMessages(channelId, { limit: 200 });
 
         return convertToTextConversation(messagesRes);
     } catch (error) {
@@ -84,6 +67,9 @@ async function summarizeConversation(conversation: string, channelTitle: string,
     logger.debug(`[summarizeConversation] prompt: ${prompt}`);
 
     try {
+        // const res = await getChatGptApi().sendMessage(prompt, { promptPrefix: '' });
+        // return res.text;
+
         const completion = await getOpenAiApi().createCompletion({
             model: 'text-davinci-003',
             prompt,
@@ -187,10 +173,10 @@ async function setCommands() {
     ]);
 }
 
-export function init() {
+export async function init() {
     const bot = getBot();
 
     setCommands();
     subscribeToCommands();
-    bot.launch();
+    return bot.launch();
 }
