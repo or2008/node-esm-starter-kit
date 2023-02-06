@@ -49,7 +49,7 @@ async function summarizeConversation(conversation: string, channelTitle: string,
 
     ------
 
-    Write a detailed summary of the following chat as a bullet point list of the most important points, include username handles:
+    Write few detailed bullet points of the most important key points in the following chat discussion, include username handles:
 
     ${JSON.stringify(conversation)}`;
 
@@ -62,8 +62,8 @@ async function summarizeConversation(conversation: string, channelTitle: string,
         const completion = await getOpenAiApi().createCompletion({
             model: 'text-davinci-003',
             prompt,
-            max_tokens: 250,
-            temperature: 1,
+            max_tokens: 300,
+            temperature: 0.7,
             top_p: 1,
             frequency_penalty: 0,
             best_of: 1
@@ -97,7 +97,7 @@ async function digestChannel(channelId: string) {
     const { title = '', description = '' } = channelData;
 
     const conversation = await getChannelConversation(channelId);
-    const limitedConversation = limitMessagesUpToMaxTokens(conversation, 2048); // .slice(0).reverse()
+    const limitedConversation = limitMessagesUpToMaxTokens(conversation, 1024); // .slice(0).reverse()
     logger.debug(`[digestChannel] limit conversation from ${conversation.length} to ${limitedConversation.length} messages..`);
 
     const limitedConversationText = limitedConversation.slice(0).reverse().join('\n');
