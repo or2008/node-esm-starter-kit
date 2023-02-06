@@ -13,7 +13,9 @@ const client = new TelegramClient(
     { connectionRetries: 5 }
 );
 
-client.connect();
+export async function init() {
+    return client.connect();
+}
 
 export function getClient() {
     return client;
