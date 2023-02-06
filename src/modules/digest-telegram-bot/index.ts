@@ -35,19 +35,8 @@ async function getChannelData(channelId: string) {
 // ie. ['@wev: Im so gever', '@rev: and Im so gay']
 async function getChannelConversation(channelId: string) {
     logger.info(`[getChannelConversation] for channel ${channelId}..`);
-    try {
-        const messagesRes = await getClient().getMessages(channelId, { limit: 200 });
-
-        return convertToTextConversation(messagesRes);
-    } catch (error) {
-        if (isAxiosError<Record<'errors', string> | Record<string, string>>(error)) {
-            const errorMessage = error.response?.data.errors?.at(0) ?? '';
-            if (errorMessage.includes('Time to unlock access'))
-                throw new CustomError('couldn\'t get channel conversation due to ban', errorMessage);
-        }
-
-        throw new CustomError('couldn\'t get channel conversation', error);
-    }
+    const messagesRes = await getClient().getMessages(channelId, { limit: 200 });
+    return convertToTextConversation(messagesRes);
 }
 
 async function summarizeConversation(conversation: string, channelTitle: string, channelDescription: string) {
@@ -107,7 +96,6 @@ async function digestChannel(channelId: string) {
     const channelData = await getChannelData(channelId);
     const { title = '', description = '' } = channelData;
 
-    // API can Temporary ban us any error, for example: invalid channel name or private channel. so call it after channelData ready
     const conversation = await getChannelConversation(channelId);
     const limitedConversation = limitMessagesUpToMaxTokens(conversation, 2048); // .slice(0).reverse()
     logger.debug(`[digestChannel] limit conversation from ${conversation.length} to ${limitedConversation.length} messages..`);
@@ -119,34 +107,37 @@ async function digestChannel(channelId: string) {
 async function mapDigestChannelError(error: unknown, ctx: NarrowedContext<Context, Update.MessageUpdate<Message.TextMessage>>) {
     logger.error(error);
 
-    if (error instanceof CustomError) {
+    if (error instanceof Error) {
         if (error.message.includes('chat not found'))
             return ctx.reply(texts.errors.nonPublicChannel);
         if (error.message.includes('Invalid channel'))
             return ctx.reply(texts.errors.nonPublicChannel);
-
-        // TODO In case of ban need to stop bot?
-        if (error.message.includes('couldn\'t get channel conversation due to ban'))
-            sendAdminMessage(`User recevied ban from tg.i-c-a.su api.\n\n ${JSON.stringify(error.payload)}`);
     }
 
     return ctx.reply(texts.errors.general);
 }
 
+async function onDigestChannelSuccess(summary: string, ctx: NarrowedContext<Context, Update.MessageUpdate<Message.TextMessage>>) {
+    await ctx.reply(summary, { disable_web_page_preview: true });
+    sendAdminMessage(summary);
+}
+
 async function onTextMessage(ctx: NarrowedContext<Context, Update.MessageUpdate<Message.TextMessage>>) {
     const { text = '' } = ctx.message;
     const channelId = getIdFromUrl(text);
+
     logger.debug(`[onTextMessage] from ${ctx.from.username ?? ctx.from.id}: ${text}`);
 
-    if (!channelId) return '';
+    const { stopLoading } = await sendLoadingMessage(ctx.chat.id, texts.digestingChannel);
 
-    const stopLoading = await sendLoadingMessage(ctx.chat.id, texts.digestingChannel);
-    const summary = await digestChannel(channelId).catch(async (error: unknown) => mapDigestChannelError(error, ctx));
-    stopLoading();
-
-    if (!summary) return '';
-    await ctx.reply(summary, { disable_web_page_preview: true });
-    sendAdminMessage(summary);
+    try {
+        const summary = await digestChannel(channelId);
+        await stopLoading();
+        onDigestChannelSuccess(summary, ctx);
+    } catch (error) {
+        mapDigestChannelError(error, ctx);
+        stopLoading();
+    }
 }
 
 function subscribeToCommands() {

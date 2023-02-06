@@ -1,4 +1,5 @@
 import { Telegraf } from 'telegraf';
+import { deleteMessages } from 'telegram/client/messages.js';
 
 import { getTelegramAdminChatId, getTelegramBotToken } from '../../config.js';
 import { logger } from '../logger.js';
@@ -41,10 +42,13 @@ export async function sendLoadingMessage(chatId: number, text: string) {
         if (loop === loops) loop = 0;
     }, 1000);
 
-    // return stop function
-    return () => {
-        clearInterval(intervalId);
-        bot.telegram.deleteMessage(chatId, loadingMessage.message_id);
+    return {
+        stopLoading: async () => {
+            clearInterval(intervalId);
+            return bot.telegram.deleteMessage(chatId, loadingMessage.message_id);
+        },
+
+        deleteLoadingMessage: async () => bot.telegram.deleteMessage(chatId, loadingMessage.message_id)
     };
 }
 
