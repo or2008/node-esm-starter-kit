@@ -8,7 +8,7 @@ import { getApi as getOpenAiApi } from '../../../services/open-ai/open-ai.js';
 import { getClient } from '../../../services/telegram-core/telegram-core.js';
 import { getTotalTokens } from '../../llm/helpers.js';
 import { logger } from '../../../services/logger.js';
-import { getBot, sendAdminMessage } from '../../../services/telegram-bot/telegram-bot.js';
+import { sendAdminMessage } from '../../../services/telegram-bot/telegram-bot.js';
 import { getUserDisplayNameFromApiMessage } from '../../../services/telegram-core/helpers.js';
 import { getPrisma } from '../../../services/prisma.js';
 

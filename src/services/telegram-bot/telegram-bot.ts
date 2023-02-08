@@ -1,8 +1,10 @@
 import { Telegraf } from 'telegraf';
 import { deleteMessages } from 'telegram/client/messages.js';
+import rateLimit from 'telegraf-ratelimit';
 
 import { getTelegramAdminChatId, getTelegramBotToken } from '../../config.js';
 import { logger } from '../logger.js';
+import { texts } from '../../modules/digest-telegram-bot/texts.js';
 
 import { getUsernameFromContext } from './helpers.js';
 
@@ -17,6 +19,9 @@ bot.use(async (ctx, next) => {
     await next(); // runs next middleware
     logger.debug(`[TelegramService] Processing ${ctx.updateType} update: ${ctx.update.update_id} End.`);
 });
+
+// Set a global limit of 10 messages per 60 seconds
+bot.use(rateLimit({ window: 60 * 1000, limit: 10, onLimitExceeded: async ctx => ctx.reply(texts.errors.rateLimit) }));
 
 export async function sendMessage(chatId: number, text: string) {
     return bot.telegram.sendMessage(chatId, text);

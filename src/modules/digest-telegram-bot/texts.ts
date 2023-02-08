@@ -33,6 +33,7 @@ You can reach us via email at hello@dayoff.fun, or through Telegram by clicking 
 
     'errors': {
         'general': 'Sorry, there was an error processing your digest request. Please try again later or contact /support if the issue persists.',
-        'nonPublicChannel': 'Sorry, the TLDRoid bot only supports public channels. Please check that you have entered a valid public channel ID and try again.'
+        'nonPublicChannel': 'Sorry, the TLDRoid bot only supports public channels. Please check that you have entered a valid public channel ID and try again.',
+        'rateLimit': 'Sorry for the inconvenience, but it looks like you\'ve hit the rate limit for this bot. Please try again later.'
     }
 };
