@@ -22,12 +22,14 @@ model TelegramChannelDigest {
 
 model TelegramUser {
   id                     String                  @id @default(auto()) @map("_id") @db.ObjectId
-  chatId                 String?                 @unique
+  telegramId             String?                 @unique
   email                  String?                 @unique
   firstName              String?
   lastName               String?
   username               String?
   telegramChannelDigests TelegramChannelDigest[]
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
 }
 
 // // Address is an embedded document

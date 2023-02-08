@@ -1,13 +1,14 @@
 import { type Context, type NarrowedContext } from 'telegraf';
 import { message } from 'telegraf/filters';
-import { type Message, type Update } from 'telegraf/types';
+import { type User, type Message, type Update } from 'telegraf/types';
 
 import { CustomError } from '../../errors.js';
 import { logger } from '../../services/logger.js';
 import { getIdFromUrl } from '../../services/telegram-bot/helpers.js';
 import { getBot, sendAdminMessage, sendLoadingMessage } from '../../services/telegram-bot/telegram-bot.js';
+import { createUser, getUserByTelegramId } from '../telegram-user/index.js';
 
-import { digestChannel } from './digest-channel.js';
+import { digestChannel } from './digest-channel/index.js';
 import { texts } from './texts.js';
 
 async function mapDigestChannelError(error: unknown, ctx: NarrowedContext<Context, Update.MessageUpdate<Message.TextMessage>>) {
@@ -31,6 +32,14 @@ async function getChannelData(channelId: string, ctx: NarrowedContext<Context, U
     }
 }
 
+async function getOrCreateUser(fromUser: User) {
+    const { id, first_name = '', last_name = '', username = '' } = fromUser;
+    const user = await getUserByTelegramId(id.toString());
+    if (user) return user;
+
+    return createUser({ firstName: first_name, lastName: last_name, telegramId: id.toString(), username });
+}
+
 async function onTextMessage(ctx: NarrowedContext<Context, Update.MessageUpdate<Message.TextMessage>>) {
     const { text = '' } = ctx.message;
     const channelId = getIdFromUrl(text);
@@ -45,7 +54,13 @@ async function onTextMessage(ctx: NarrowedContext<Context, Update.MessageUpdate<
     const { stopLoading } = await sendLoadingMessage(ctx.chat.id, texts.digestingChannel);
 
     try {
-        const summary = await digestChannel(channelId, title, description);
+        const internalUser = await getOrCreateUser(ctx.from);
+        const summary = await digestChannel({
+            channelId,
+            channelTitle: title,
+            channelDescription: description,
+            userId: internalUser.id
+        });
         await stopLoading();
         onDigestChannelSuccess(summary, ctx);
     } catch (error) {

@@ -1,14 +1,16 @@
 import { type Api } from 'telegram';
 import { type TotalList } from 'telegram/Helpers.js';
+import { type Prisma } from '@prisma/client';
 
-import { CustomError} from '../../errors.js';
-import { getApi as getChatGptApi } from '../../services/chatgpt.js';
-import { getApi as getOpenAiApi } from '../../services/open-ai/open-ai.js';
-import { getClient } from '../../services/telegram-core/telegram-core.js';
-import { getTotalTokens } from '../llm/helpers.js';
-import { logger } from '../../services/logger.js';
-import { getBot, sendAdminMessage } from '../../services/telegram-bot/telegram-bot.js';
-import { getUserDisplayNameFromApiMessage } from '../../services/telegram-core/helpers.js';
+import { CustomError } from '../../../errors.js';
+import { getApi as getChatGptApi } from '../../../services/chatgpt.js';
+import { getApi as getOpenAiApi } from '../../../services/open-ai/open-ai.js';
+import { getClient } from '../../../services/telegram-core/telegram-core.js';
+import { getTotalTokens } from '../../llm/helpers.js';
+import { logger } from '../../../services/logger.js';
+import { getBot, sendAdminMessage } from '../../../services/telegram-bot/telegram-bot.js';
+import { getUserDisplayNameFromApiMessage } from '../../../services/telegram-core/helpers.js';
+import { getPrisma } from '../../../services/prisma.js';
 
 function convertToTextConversation(messagesRes: TotalList<Api.Message>) {
     return messagesRes.map(apiMessage => {
@@ -25,7 +27,6 @@ async function getChannelConversation(channelId: string) {
     const messagesRes = await getClient().getMessages(channelId, { limit: 200 });
     return convertToTextConversation(messagesRes);
 }
-
 
 async function summarizeConversation(conversation: string, channelTitle: string, channelDescription: string) {
     logger.info(`[summarizeConversation] conversation length: ${conversation.length}`);
@@ -77,8 +78,23 @@ function limitMessagesUpToMaxTokens(messages: string[], maxTokens: number) {
     return limitedMessages;
 }
 
+export async function createTelegramChannelDigest(payload: Prisma.TelegramChannelDigestCreateInput) {
+    logger.info(`[digest-channel/createTelegramChannelDigest] Creating telegram channel digest with payload: ${JSON.stringify(payload)}`);
+    return getPrisma().telegramChannelDigest.create({
+        data: payload
+    });
+}
 
-export async function digestChannel(channelId: string, channelTitle: string, channelDescription: string) {
+export interface DigestChannelPayload {
+    userId: string;
+    channelId: string;
+    channelTitle: string;
+    channelDescription: string;
+}
+
+export async function digestChannel(payload: DigestChannelPayload) {
+    const { channelDescription, channelId, channelTitle, userId } = payload;
+
     logger.info(`[digestChannel] for channel ${channelId}..`);
     sendAdminMessage(`[digestChannel] for channel https://t.me/${channelId}`);
 
@@ -87,5 +103,17 @@ export async function digestChannel(channelId: string, channelTitle: string, cha
     logger.debug(`[digestChannel] limit conversation from ${conversation.length} to ${limitedConversation.length} messages..`);
 
     const limitedConversationText = limitedConversation.slice(0).reverse().join('\n');
-    return summarizeConversation(limitedConversationText, channelTitle, channelDescription);
+    const res = await summarizeConversation(limitedConversationText, channelTitle, channelDescription);
+
+    createTelegramChannelDigest({
+        channelId,
+
+        createdBy: {
+            connect: {
+                id: userId
+            }
+        }
+    });
+
+    return res;
 }

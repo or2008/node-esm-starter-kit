@@ -17,7 +17,7 @@
         "postinstall": "npm run setup-precommit-hook",
         "setup-precommit-hook": "node --no-warnings --trace-warnings --loader ts-node/esm ./scripts/setup-precommit.ts",
         "get-telegram-client-string-session": "node --no-warnings --trace-warnings --loader ts-node/esm ./scripts/get-telegram-client-string-session.ts",
-        "prisma-generate": "npx prisma generate"
+        "prisma:generate": "npx prisma generate"
     },
     "keywords": [],
     "author": "",
