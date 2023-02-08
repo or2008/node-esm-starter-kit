@@ -18,13 +18,6 @@ function convertToTextConversation(messagesRes: TotalList<Api.Message>) {
     });
 }
 
-async function getChannelData(channelId: string) {
-    const channelData = await getBot().telegram.getChat(`@${channelId}`);
-    if (channelData.type === 'private') throw new CustomError('Invalid channel');
-    return channelData;
-}
-
-
 // return array of messages with username prefixed in each item.
 // ie. ['@wev: Im so gever', '@rev: and Im so gay']
 async function getChannelConversation(channelId: string) {
@@ -85,17 +78,14 @@ function limitMessagesUpToMaxTokens(messages: string[], maxTokens: number) {
 }
 
 
-export async function digestChannel(channelId: string) {
+export async function digestChannel(channelId: string, channelTitle: string, channelDescription: string) {
     logger.info(`[digestChannel] for channel ${channelId}..`);
     sendAdminMessage(`[digestChannel] for channel https://t.me/${channelId}`);
-
-    const channelData = await getChannelData(channelId);
-    const { title = '', description = '' } = channelData;
 
     const conversation = await getChannelConversation(channelId);
     const limitedConversation = limitMessagesUpToMaxTokens(conversation, 1024); // .slice(0).reverse()
     logger.debug(`[digestChannel] limit conversation from ${conversation.length} to ${limitedConversation.length} messages..`);
 
     const limitedConversationText = limitedConversation.slice(0).reverse().join('\n');
-    return summarizeConversation(limitedConversationText, title, description);
+    return summarizeConversation(limitedConversationText, channelTitle, channelDescription);
 }
