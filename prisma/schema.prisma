@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model TelegramChannelDigest {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  channelId      String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  digestResponse String?
+  createdBy      TelegramUser @relation(fields: [createdById], references: [id])
+  createdById    String       @db.ObjectId
+}
+
+model TelegramUser {
+  id                     String                  @id @default(auto()) @map("_id") @db.ObjectId
+  chatId                 String?                 @unique
+  email                  String?                 @unique
+  firstName              String?
+  lastName               String?
+  username               String?
+  telegramChannelDigests TelegramChannelDigest[]
+}
+
+// // Address is an embedded document
+// type Address {
+//   street String
+//   city   String
+//   state  String
+//   zip    String
+// }

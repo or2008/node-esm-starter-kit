@@ -10,6 +10,7 @@ declare global {
             GOOGLE_API_KEY: string;
             NLPCLOUD_API_KEY: string;
             OPENAI_API_KEY: string;
+            DATABASE_URL: string;
         }
     }
 }

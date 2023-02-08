@@ -2,11 +2,13 @@
 import { init as initTgDstBot } from './modules/digest-telegram-bot/index.js';
 import { logger } from './services/logger.js';
 import { init as initTgCore } from './services/telegram-core/telegram-core.js';
+import { init as initDbModule } from './modules/db/index.js';
 
 async function main() {
     const msg = 'Running.. 🎯🤖';
     logger.info(msg);
 
+    await initDbModule();
     await initTgCore();
     await initTgDstBot();
 }
