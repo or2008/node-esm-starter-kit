@@ -23,12 +23,16 @@ Contact our support team for assistance with any issues or questions regarding t
 
 You can reach us via email at hello@dayoff.fun, or through Telegram by clicking this link https://t.me/tldroid_community.
 `,
+    'feedbackMessage': `
+Share your feedback, ideas and suggestions for TLDRoid with our team by filling out the form below.\n\nYour input is valuable to us and will help us make TLDRoid even better, thanks for being a part of the TLDRoid community!\n\n https://ench2h4ikoy.typeform.com/to/zzEH8Vmq.
+`,
 
     'digestingChannel': 'Thank you, channel messages are now being processed and a summary will be sent to you shortly',
 
     'commands': {
         'helpDescription': 'Help',
-        'supportDescription': 'Contact our support team for assistance with any issues or questions.'
+        'supportDescription': 'Contact our support team for assistance with any issues or questions.',
+        'feedbackDescription': 'Share your feedback, ideas and suggestions for TLDRoid.'
     },
 
     'errors': {

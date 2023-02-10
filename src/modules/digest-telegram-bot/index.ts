@@ -75,6 +75,7 @@ function subscribeToCommands() {
     bot.start(async ctx => ctx.replyWithHTML(texts.welcomeMessage, { disable_web_page_preview: true }));
     bot.help(async ctx => ctx.replyWithHTML(texts.welcomeMessage, { disable_web_page_preview: true }));
     bot.command('support', async ctx => ctx.reply(texts.supportMessage));
+    bot.command('feedback', async ctx => ctx.reply(texts.feedbackMessage));
     bot.on(message('text'), async ctx => onTextMessage(ctx));
 }
 
@@ -89,6 +90,10 @@ async function setCommands() {
         {
             command: '/support',
             description: texts.commands.supportDescription,
+        },
+        {
+            command: '/feedback',
+            description: texts.commands.supportDescription,
         }
     ]);
 }
@@ -96,6 +101,7 @@ async function setCommands() {
 export async function init() {
     const bot = getBot();
 
+    // bot.use(session());
     setCommands();
     subscribeToCommands();
     return bot.launch();
