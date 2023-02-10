@@ -28,8 +28,8 @@ export async function sendMessage(chatId: number, text: string) {
 }
 
 export async function sendAdminMessage(text: string) {
-    const chatId = getTelegramAdminChatId();
-    return bot.telegram.sendMessage(chatId, text);
+    // const chatId = getTelegramAdminChatId();
+    // return bot.telegram.sendMessage(chatId, text);
 }
 
 // Append ... with animation to each message

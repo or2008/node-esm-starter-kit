@@ -38,7 +38,8 @@ async function summarizeConversation(conversation: string, channelTitle: string,
 
     ------
 
-    Write few detailed bullet points of the most important key points in the following chat discussion, include username handles:
+    Write a detailed bullet point list of the most important key points in the following chat discussion,
+    include username handles and write up to 300 words:
 
     ${JSON.stringify(conversation)}`;
 
