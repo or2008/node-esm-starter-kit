@@ -93,7 +93,7 @@ async function setCommands() {
         },
         {
             command: '/feedback',
-            description: texts.commands.supportDescription,
+            description: texts.commands.feedbackDescription
         }
     ]);
 }
