@@ -20,7 +20,7 @@
         "prisma:generate": "npx prisma generate",
         "deploy:prod": "flyctl deploy",
         "prod:status": "flyctl status",
-        "build:prod": "echo build:prod",
+        "build:prod": "npm i",
         "start:prod": "node --no-warnings --trace-warnings --loader ts-node/esm src/app.ts"
     },
     "keywords": [],
