@@ -1,4 +1,4 @@
-
+import { init as initI18next } from './services/i18n/i18n.js';
 import { init as initTgDstBot } from './modules/digest-telegram-bot/index.js';
 import { logger } from './services/logger.js';
 import { init as initTgCore } from './services/telegram-core/telegram-core.js';
@@ -8,6 +8,7 @@ async function main() {
     const msg = 'Running.. 🎯🤖';
     logger.info(msg);
 
+    await initI18next();
     await initDbModule();
     await initTgCore();
     await initTgDstBot();

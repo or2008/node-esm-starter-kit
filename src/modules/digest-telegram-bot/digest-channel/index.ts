@@ -31,15 +31,21 @@ async function getChannelConversation(channelId: string) {
 async function summarizeConversation(conversation: string, channelTitle: string, channelDescription: string) {
     logger.info(`[summarizeConversation] conversation length: ${conversation.length}`);
 
+    // const prompt = `
+    // For the following chat group:
+    // Group title: ${JSON.stringify(channelTitle)}.
+    // Group description: ${JSON.stringify(channelDescription)}.
+
+    // ------
+
+    // Write a detailed bullet point list of the most important key points in the following chat discussion,
+    // include username handles and write up to 300 words:
+
+    // ${JSON.stringify(conversation)}`;
+
     const prompt = `
-    For the following chat group:
-    Group title: ${JSON.stringify(channelTitle)}.
-    Group description: ${JSON.stringify(channelDescription)}.
-
-    ------
-
-    Write a detailed bullet point list of the most important key points in the following chat discussion,
-    include username handles and write up to 300 words:
+    Please summarize the most important points from the latest conversation in this Telegram channel, including relevant usernames if necessary.
+    The summary should be in the form of bullet points, breaking down the conversation into specific, detailed points.
 
     ${JSON.stringify(conversation)}`;
 
@@ -50,16 +56,19 @@ async function summarizeConversation(conversation: string, channelTitle: string,
         // return res.text;
 
         const completion = await getOpenAiApi().createCompletion({
-            model: 'text-davinci-003',
+            // model: 'text-davinci-003',
+            model: 'text-curie-001',
             prompt,
             max_tokens: 300,
-            temperature: 0.7,
+            temperature: 1,
             top_p: 1,
             frequency_penalty: 0,
             best_of: 1
         });
         const res = completion.data.choices[0].text;
         if (!res) throw new CustomError('returned empty res');
+
+        logger.debug(`[summarizeConversation] res: ${prompt}`);
 
         return res;
     } catch (error: unknown) {
