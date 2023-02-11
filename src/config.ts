@@ -32,3 +32,6 @@ export function getOpenAiApiKey() {
     return process.env.OPENAI_API_KEY;
 }
 
+export function getNodeEnv(): 'development' | 'production' {
+    return process.env.NODE_ENV;
+}
