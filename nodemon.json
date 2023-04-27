@@ -1,0 +1,6 @@
+{
+    "watch": ["src/**"],
+    "ext": "ts,json",
+    "exec": "node --no-warnings --trace-warnings --loader ts-node/esm src/app.ts",
+    "ignore": ["src/api-server/frontend/**", "src/api-server/docs/**"]
+  }

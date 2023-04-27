@@ -1,11 +1,9 @@
 import { Telegraf } from 'telegraf';
-import { deleteMessages } from 'telegram/client/messages.js';
 import rateLimit from 'telegraf-ratelimit';
 import { t } from 'i18next';
 
-import { getTelegramAdminChatId, getTelegramBotToken } from '../../config.js';
+import { getTelegramBotToken } from '../../config.js';
 import { logger } from '../logger.js';
-import { texts } from '../../modules/digest-telegram-bot/texts.js';
 
 import { getUsernameFromContext } from './helpers.js';
 

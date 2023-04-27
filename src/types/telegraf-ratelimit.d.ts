@@ -1,6 +1,6 @@
 declare module 'telegraf-ratelimit' {
-    import { Context, Middleware } from "telegraf";
-    import { Update } from "telegraf/types";
+    import { Context, Middleware } from 'telegraf';
+    import { Update } from 'telegraf/types';
 
     interface LimitConfig {
         window: number;

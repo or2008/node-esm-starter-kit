@@ -1,17 +1,25 @@
 import { init as initI18next } from './services/i18n/i18n.js';
-import { init as initTgDstBot } from './modules/digest-telegram-bot/index.js';
 import { logger } from './services/logger.js';
-import { init as initTgCore } from './services/telegram-core/telegram-core.js';
-import { init as initDbModule } from './modules/db/index.js';
+import { init as initComfyUi  } from './services/comfy-ui/comfy-ui.js';
+import { init as initServer } from './api-server/server.js';
 
 async function main() {
     const msg = 'Running.. 🎯🤖';
     logger.info(msg);
 
+    initServer();
     await initI18next();
-    await initDbModule();
-    await initTgCore();
-    await initTgDstBot();
+    initComfyUi();
+
+
+    // setTimeout(async () => {
+    //     await queuePrompt().catch(console.error);
+    // }, 2000);
+
+
+    // await initDbModule();
+    // await initTgCore();
+    // await initTgDstBot();
 }
 
 main().catch((error: unknown) => {

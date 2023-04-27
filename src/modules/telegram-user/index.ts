@@ -1,4 +1,4 @@
-import { type Prisma, type TelegramUser } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 
 import { logger } from '../../services/logger.js';
 import { getPrisma } from '../../services/prisma.js';

@@ -1,5 +1,5 @@
-import { Context, NarrowedContext } from "telegraf";
-import { CallbackQuery, Chat, Message, Update } from "telegraf/types";
+import { Context, NarrowedContext } from 'telegraf';
+import { CallbackQuery, Chat, Message, Update } from 'telegraf/types';
 
 type Enumerate<N extends number, Acc extends number[] = []> = Acc['length'] extends N
   ? Acc[number]

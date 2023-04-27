@@ -1,13 +1,12 @@
 import { t } from 'i18next';
-import { Markup, type Context, type NarrowedContext } from 'telegraf';
 import { message } from 'telegraf/filters';
-import { type User, type Message, type Update } from 'telegraf/types';
+import type { User } from 'telegraf/types';
 
 import { CustomError } from '../../errors.js';
 import { logger } from '../../services/logger.js';
 import { getIdFromUrl } from '../../services/telegram-bot/helpers.js';
 import { getBot, sendAdminMessage, sendLoadingMessage } from '../../services/telegram-bot/telegram-bot.js';
-import { type TgGroupChat, type TextMessageCtx, type CallbackQueryCtx } from '../../types/custom.js';
+import type { TgGroupChat, TextMessageCtx } from '../../types/custom.js';
 import { createUser, getUserByTelegramId } from '../telegram-user/index.js';
 
 import { digestChannel } from './digest-channel/index.js';

@@ -1,4 +1,4 @@
-import { type Context } from 'telegraf';
+import type { Context } from 'telegraf';
 
 export function getUsernameFromContext(ctx: Context) {
     if (!ctx.from) return '';

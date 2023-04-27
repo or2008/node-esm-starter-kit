@@ -12,6 +12,7 @@
         "moduleResolution": "nodenext",
         "forceConsistentCasingInFileNames": true,
         "strict": true,
+        "noUncheckedIndexedAccess": true,
         "strictNullChecks": true,
         "allowJs": false,
         "noImplicitAny": true,

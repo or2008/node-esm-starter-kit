@@ -1,4 +1,3 @@
-/* eslint-disable fp/no-class, fp/no-this */
 export class CustomError extends Error {
     public readonly payload: unknown;
 

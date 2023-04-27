@@ -15,7 +15,7 @@ const openai = new OpenAIApi(configuration);
 export async function createCompletion(payload: Partial<CreateCompletionRequest>) {
     try {
         const res = await openai.createCompletion({
-            model: 'text-davinci-003',
+            model: 'gpt-3.5-turbo',
             ...payload
         });
         return res.data.choices[0].text;

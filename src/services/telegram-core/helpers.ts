@@ -1,4 +1,4 @@
-import { type Api } from 'telegram';
+import type { Api } from 'telegram';
 
 export function getUserDisplayNameFromApiUser(user: Api.User) {
     const { firstName = '', lastName = '', username = '', accessHash } = user;

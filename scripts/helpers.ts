@@ -9,4 +9,4 @@ export async function runCommand(command: string) {
                 resolve(stdout.trim());
         });
     });
-};
+}

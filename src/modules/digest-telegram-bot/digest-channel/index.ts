@@ -1,9 +1,8 @@
-import { type Api } from 'telegram';
-import { type TotalList } from 'telegram/Helpers.js';
-import { type Prisma } from '@prisma/client';
+import type { Api } from 'telegram';
+import type { TotalList } from 'telegram/Helpers.js';
+import type { Prisma } from '@prisma/client';
 
 import { CustomError } from '../../../errors.js';
-import { getApi as getChatGptApi } from '../../../services/chatgpt.js';
 import { getApi as getOpenAiApi } from '../../../services/open-ai/open-ai.js';
 import { getClient } from '../../../services/telegram-core/telegram-core.js';
 import { getTotalTokens } from '../../llm/helpers.js';
