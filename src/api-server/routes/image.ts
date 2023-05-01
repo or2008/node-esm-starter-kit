@@ -1,11 +1,12 @@
 import { existsSync } from 'node:fs';
 
 import { z } from 'zod';
-import { ez } from 'express-zod-api';
+import { createHttpError, ez } from 'express-zod-api';
 
 import defaultEndpointsFactory from '../endpoints-factory.js';
 import { authMiddleware } from '../middlewares/auth.js';
 import { fileStreamingEndpointsFactory } from '../endpoints-factory/file-streaming.js';
+import { queueEnhancePrompt, queueEnhancePrompts } from '../../modules/image/index.js';
 
 // export const router = Router();
 
@@ -80,7 +81,7 @@ const getImage = fileStreamingEndpointsFactory.build({
 });
 
 const prompt = defaultEndpointsFactory
-    .addMiddleware(authMiddleware)
+    // .addMiddleware(authMiddleware)
     .build({
         method: 'post',
 
@@ -89,19 +90,53 @@ const prompt = defaultEndpointsFactory
         }),
 
         output: z.object({
-            prompt: z.string(),
+            // res: z.string(),
         }),
 
         handler: async ({ input: { prompt }, options, logger }) => {
             logger.debug('Options:', options); // middlewares provide options
-            return { prompt };
+            try {
+                const res = await queueEnhancePrompt({ positivePrompt: prompt });
+                return { res };
+            } catch (error) {
+                throw createHttpError(400, 'Failed');
+            }
+        },
+    });
+
+
+const enhancePromptBatch = defaultEndpointsFactory
+    // .addMiddleware(authMiddleware)
+    .build({
+        method: 'post',
+
+        input:
+            z.object({
+                prompts: z.object({
+                    positivePrompt: z.string({ required_error: 'positivePrompt is required' }).max(500, 'Must be 500 or fewer characters long'),
+                    negativePrompt: z.string().max(500, 'Must be 500 or fewer characters long').optional()
+                }).array()
+            }),
+
+        output: z.object({
+            // res: z.string(),
+        }),
+
+        handler: async ({ input: { prompts }, options, logger }) => {
+            logger.debug('Options:', options); // middlewares provide options
+            try {
+                const res = await queueEnhancePrompts(prompts);
+                return { res };
+            } catch (error) {
+                throw createHttpError(400, 'Failed');
+            }
         },
     });
 
 
 const routes = {
     hello,
-
+    'enhance-prompt-batch': enhancePromptBatch,
     // 'view': {
     //     ':id': getImage
     // },

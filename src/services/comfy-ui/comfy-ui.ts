@@ -3,14 +3,12 @@ import type WebSocket from 'ws';
 import { get, post } from '../network.js';
 import { createWebSocket } from '../ws/ws.js';
 import { randomNumber } from '../../utils/numbers.js';
+import { logger } from '../logger.js';
 
 let ws: WebSocket | null = null;
 let clientId = '32371c472bf0441da26c154deed68d91';
 
-export interface Prompt {
-    clientId: string;
-    prompt: Record<string, unknown>;
-}
+export type Prompt = Record<string, unknown>;
 
 
 // {
@@ -82,9 +80,9 @@ export function init(cid = '') {
 }
 
 export async function queuePrompt(prompt: Prompt) {
-    post('http://127.0.0.1:8188/prompt', JSON.stringify(prompt));
+    logger.debug(`[services/comfy-ui] queuePrompt: ${JSON.stringify(prompt, null, 4)}`);
+    return post('http://127.0.0.1:8188/prompt', JSON.stringify({ clientId, prompt }));
 }
-
 
 /**
  * Gets the current state of the queue

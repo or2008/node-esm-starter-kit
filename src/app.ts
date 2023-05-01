@@ -40,5 +40,4 @@ process.on('unhandledRejection', (error: unknown) => {
 process.on('uncaughtException', error => {
     logger.error('uncaughtException..');
     logger.error(error);
-
 });

@@ -11,6 +11,9 @@ declare global {
             NLPCLOUD_API_KEY: string;
             OPENAI_API_KEY: string;
             DATABASE_URL: string;
+            GENERATED_IMAGE_BUCKET_BASE_URL: string;
+            PORT: number;
+            BASE_URL: number;
         }
     }
 }

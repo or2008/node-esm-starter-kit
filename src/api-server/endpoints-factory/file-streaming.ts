@@ -22,7 +22,8 @@ export const fileStreamingEndpointsFactory = new EndpointsFactory(
 
                 createReadStream(output.path).pipe(response.type(output.filename));
             } else {
-                response.status(400).send('File is missing');
+                response.status(404).send('File is missing');
+                // response.status(404).end();
             }
         },
     })

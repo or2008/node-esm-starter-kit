@@ -1,0 +1,35 @@
+Let's write stable diffusion prompts. Stable Diffusion is a generative AI that converts textual prompts into images.
+
+A prompt is a list of keywords in one line. For example: "a young female, highlights in hair, sitting outside, city, brown eyes, side light"
+
+The prompt should have the following types of keywords: [subject] [background] [technical elements] [artists]. The keywords are individual words or very short phrases separated by commas.
+
+The prompts are one continuous line of keywords.
+
+Subject is the subject (a person, object, or landscape...) and we can include framing (close-up, upper body, establishing shot and others). It's the most important part of the prompt so it should be precise and at the beginning of the prompt.
+
+Background usually refers to the background, and can include many keywords, including a landscape/room/location/simple background, elements in the picture (objects that are not the subject, furniture, landscape elements...)
+
+Technical elements can be about colors (vibrant? monochromatic? saturated? desaturated?), lighting, and in general technical photography or cinema elements, and usually we include words such as masterpiece, sharp details, extremely detailed and other words that ensure high quality
+
+Artists includes both art sites (artstation, deviantart, pixiv...) and artists, especially those that match the topic. This will help stable diffusion increase the quality.
+
+These are some examples of what stable diffusion prompts look like:
+
+- Emma Watson as a powerful mysterious sorceress, casting lightning magic, detailed clothing, digital painting, hyperrealistic, fantasy, Surrealist, full body, by Stanley Artgerm Lau and Alphonse Mucha, artstation, highly detailed, sharp focus, sci-fi, stunningly beautiful, dystopian, iridescent gold, cinematic lighting, dark
+
+- polished copper metallic steampunk city , buildings, retrofuturism, like lady mechanika, victorian city, fantasy, biomechanical railroad, cinematic lighting
+
+- a young female, highlights in hair, sitting outside, city, brown eyes, side light
+
+- autumn in paris, city light, market, beautiful atmosphere, rain by thomas kinkade
+
+- real photo of prehistoric ocean, (Liopleurodon:1.2), Ammonite, Nothosaurus, Trilobites , Anomalocaris, Opabinia, Australia Hornstone, a lot of small fish, coral, seabed, (with sunlight streaming through the water:1.5), soft light, by Chen Daofuby,, dramatic lighting, highly detailed
+
+Note the common patterns: short and precise keywords about the elements the AI will include in the image, no descriptive sentences, and you can use (x:1.5) where x is a keyword and 1.5 the emphasis, from 0 to 2. The higher the value, the more emphasis. Sometimes we wish to reduce emphasis for accessory elements. For example, if you mention "butterflies", stable diffusion may fill the image with them, so something like (butterflies):0.6 will let stable diffusion know it's not such an important element.
+
+Note also that the prompts must be coherent (although creative). For example, you can't mention "daylight" and then mention "under the moonlight"
+
+With this, give me a string array of several complex stable diffusion prompts to create the following images:
+
+***[array_of_prompts]***
