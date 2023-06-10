@@ -23,12 +23,15 @@ type PostImageEnhancePromptBatchInput = {
     prompts: {
         positivePrompt: string;
         negativePrompt?: string | undefined;
+        stabilityAiTextToImageParams?: any;
     }[];
 };
 
 type PostImageEnhancePromptBatchResponse = {
     status: "success";
-    data: {};
+    data: {
+        id: string;
+    };
 } | {
     status: "error";
     error: {

@@ -12,7 +12,9 @@ export async function get<T>(url: string, queryParams = {}, headers = {} as Axio
 }
 
 export async function post<T>(url: string, data = {}, headers = {}) {
-    fetch('http://127.0.0.1:8188/prompt', {
+    console.log(`POST ${url}`, {data, headers});
+
+    return fetch(url, {
         'headers': {
             'accept': '*/*',
             'accept-language': 'en,en-US;q=0.9,he;q=0.8,de;q=0.7,ru;q=0.6,zh-CN;q=0.5,zh;q=0.4,pt;q=0.3,fr;q=0.2',
@@ -23,8 +25,6 @@ export async function post<T>(url: string, data = {}, headers = {}) {
         'body': data,
         'method': 'POST'
     });
-
-
 }
 
 // export async function post(path = '/', body = {}, headers = {}, useConfigBase = true): Promise<{ data: any; headers: any }> {

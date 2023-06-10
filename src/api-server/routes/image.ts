@@ -72,7 +72,8 @@ const getImage = fileStreamingEndpointsFactory.build({
         const { filename } = input;
         logger.debug('Options:', options); // middlewares provide options
 
-        const path = `/Users/or/projects/ComfyUI/output/${filename}`;
+        // const path = `/Users/or/projects/ComfyUI/output/${filename}`;
+        const path = `/Users/or/projects/node-esm-starter-kit/src/services/stability-ai/output/${filename}`;
         const isExists = existsSync(path);
         if (!isExists) return {};
 
@@ -105,6 +106,34 @@ const prompt = defaultEndpointsFactory
     });
 
 
+// const enhancePromptBatch = defaultEndpointsFactory
+//     // .addMiddleware(authMiddleware)
+//     .build({
+//         method: 'post',
+
+//         input:
+//             z.object({
+//                 prompts: z.object({
+//                     positivePrompt: z.string({ required_error: 'positivePrompt is required' }).max(500, 'Must be 500 or fewer characters long'),
+//                     negativePrompt: z.string().max(500, 'Must be 500 or fewer characters long').optional()
+//                 }).array()
+//             }),
+
+//         output: z.object({
+//             id: z.string()
+//         }),
+
+//         handler: async ({ input: { prompts }, options, logger }) => {
+//             logger.debug('Options:', options); // middlewares provide options
+//             try {
+//                 const res = await queueEnhancePrompts(prompts);
+//                 return res;
+//             } catch (error) {
+//                 throw createHttpError(400, 'Failed ' + error.message);
+//             }
+//         },
+//     });
+
 const enhancePromptBatch = defaultEndpointsFactory
     // .addMiddleware(authMiddleware)
     .build({
@@ -114,21 +143,22 @@ const enhancePromptBatch = defaultEndpointsFactory
             z.object({
                 prompts: z.object({
                     positivePrompt: z.string({ required_error: 'positivePrompt is required' }).max(500, 'Must be 500 or fewer characters long'),
-                    negativePrompt: z.string().max(500, 'Must be 500 or fewer characters long').optional()
+                    negativePrompt: z.string().max(500, 'Must be 500 or fewer characters long').optional(),
+                    stabilityAiTextToImageParams: z.any()
                 }).array()
             }),
 
         output: z.object({
-            // res: z.string(),
+            id: z.string()
         }),
 
         handler: async ({ input: { prompts }, options, logger }) => {
             logger.debug('Options:', options); // middlewares provide options
             try {
                 const res = await queueEnhancePrompts(prompts);
-                return { res };
+                return res;
             } catch (error) {
-                throw createHttpError(400, 'Failed');
+                throw createHttpError(400, 'Failed ' + error.message);
             }
         },
     });

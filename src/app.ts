@@ -9,7 +9,7 @@ async function main() {
 
     initServer();
     await initI18next();
-    initComfyUi();
+    // initComfyUi();
 
 
     // setTimeout(async () => {

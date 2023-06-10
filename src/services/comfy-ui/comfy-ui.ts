@@ -1,15 +1,16 @@
 import type WebSocket from 'ws';
-
 import { get, post } from '../network.js';
 import { createWebSocket } from '../ws/ws.js';
-import { randomNumber } from '../../utils/numbers.js';
 import { logger } from '../logger.js';
+import { notifyWebhook } from '../../modules/image/ notify-webhook.js';
 
 let ws: WebSocket | null = null;
 let clientId = '32371c472bf0441da26c154deed68d91';
-
-export type Prompt = Record<string, unknown>;
-
+export interface ConfyUiPromptPayload {
+    prompt: Record<string, unknown>;
+    extra_data?: unknown;
+    client_id?: string;
+}
 
 // {
 //     'client_id': '32371c472bf0441da26c154deed68d91',
@@ -40,18 +41,18 @@ export function init(cid = '') {
     });
 
     ws.on('error', console.error);
-    ws.on('close', console.log);
+    ws.on('close', console.log); // TODO recconect
     ws.on('message', event => {
         try {
             const msg = JSON.parse(event.toString());
+            // notifyWebhook({});
             console.log(JSON.stringify(msg, null, 4));
 
             switch (msg.type) {
             case 'status': {
                 if (msg.data.sid)
                     clientId = msg.data.sid;
-
-                // this.dispatchEvent(new CustomEvent('status', { detail: msg.data.status }));
+                    // this.dispatchEvent(new CustomEvent('status', { detail: msg.data.status }));
                 break;
             }
 
@@ -70,18 +71,18 @@ export function init(cid = '') {
             }
             default: {
                 throw new Error(`Unknown message type ${msg.type}`);
-
             }
             }
         } catch {
-            console.warn('Unhandled message:', event.data);
+            console.warn('Unhandled message:', event);
         }
     });
 }
 
-export async function queuePrompt(prompt: Prompt) {
-    logger.debug(`[services/comfy-ui] queuePrompt: ${JSON.stringify(prompt, null, 4)}`);
-    return post('http://127.0.0.1:8188/prompt', JSON.stringify({ clientId, prompt }));
+export async function queuePrompt(payload: ConfyUiPromptPayload) {
+    const { prompt, extra_data } = payload;
+    logger.debug('[services/comfy-ui] queuePrompt');
+    return post('http://127.0.0.1:8188/prompt', JSON.stringify({ client_id: clientId, prompt, extra_data }));
 }
 
 /**

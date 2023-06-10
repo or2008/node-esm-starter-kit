@@ -30,6 +30,6 @@ Note the common patterns: short and precise keywords about the elements the AI w
 
 Note also that the prompts must be coherent (although creative). For example, you can't mention "daylight" and then mention "under the moonlight"
 
-With this, give me a string array of several complex stable diffusion prompts to create the following images:
+With this, give me a stable diffusion prompts to create the following images:
 
 ***[array_of_prompts]***

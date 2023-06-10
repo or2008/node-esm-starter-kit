@@ -6,7 +6,8 @@
         "module": "esnext",
         "target": "esnext",
         "types": [
-            "node"
+            "node",
+            "DOM"
         ],
         "resolveJsonModule": true,
         "moduleResolution": "nodenext",
