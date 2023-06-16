@@ -14,7 +14,7 @@
         "lint": "eslint . --ext .ts",
         "lint:fix": "eslint . --ext .ts --fix",
         "lint:package.json": "npmPkgJsonLint .",
-        "preinstall": "husky install .husky",
+        "preinstall": "npx husky install .husky",
         "postinstall": "npm run setup-precommit-hook",
         "setup-precommit-hook": "node --no-warnings --trace-warnings --loader ts-node/esm ./scripts/setup-precommit.ts",
         "get-telegram-client-string-session": "node --no-warnings --trace-warnings --loader ts-node/esm ./scripts/get-telegram-client-string-session.ts",
