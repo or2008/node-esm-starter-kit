@@ -102,7 +102,7 @@ export async function queueEnhancePrompts(payloads: QueueEnhancePromptPayload[])
                 cloudinaryClient.v2.uploader.upload(`data:image/jpeg;base64,${image.base64}`, {
                     async: true,
                     folder: 'schrodi-stories',
-                    public_id: `${fileNamePrefix}_${index}.png`
+                    public_id: `${fileNamePrefix}_${index}`
                 });
             });
         } catch (error) {
