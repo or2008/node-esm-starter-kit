@@ -34,20 +34,24 @@ export async function generate(params: StabilityAiTextToImageParams) {
         height: 512,
         width: 512,
         samples: 1,
-        steps: 20,
+        steps: 40,
     }, params);
     console.log(`[stability-ai] generating text-to-image with the following body request: ${JSON.stringify(body)}` );
 
-    const res = await post(`${apiHost}/v1/generation/${engineId}/text-to-image`,
-        JSON.stringify(body),
-        {
-            Authorization: `Bearer ${apiKey}`,
-        }
-    );
+    try {
+        const res = await post(`${apiHost}/v1/generation/${engineId}/text-to-image`,
+            JSON.stringify(body),
+            {
+                Authorization: `Bearer ${apiKey}`,
+            }
+        );
 
-    const resJSON = (await res.json()) as GenerationResponse;
+        const resJSON = (await res.json()) as GenerationResponse;
 
-    if (!resJSON.artifacts) throw new Error(resJSON.message);
+        if (!resJSON.artifacts) throw new Error(resJSON.message);
 
-    return resJSON;
+        return resJSON;
+    } catch (error) {
+        throw new Error(error.message);
+    }
 }

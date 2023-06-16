@@ -39,3 +39,11 @@ export function getStabilityAiApiKey() {
 export function getNodeEnv(): 'development' | 'production' {
     return process.env.NODE_ENV;
 }
+
+export function getCloudinaryApiKey() {
+    return process.env.CLOUDINARY_API_KEY;
+}
+
+export function getCloudinaryApiSecret() {
+    return process.env.CLOUDINARY_API_SECRET;
+}

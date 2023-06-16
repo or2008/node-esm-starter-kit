@@ -5,7 +5,7 @@ import { enhancePrompts } from './enhance-prompt.js';
 import { v4 as uuidv4 } from 'uuid';
 import { StabilityAiTextToImageParams, generate } from '../../services/stability-ai/stability-ai.js';
 import { cloudinaryClient } from '../../services/cloudinary/cloudinary.js';
-import { notify, notifyWebhook } from './ notify-webhook.js';
+import { notifyWebhook } from './ notify-webhook.js';
 
 // export interface EnhancePromptOptions {
 //     //
@@ -97,9 +97,12 @@ export async function queueEnhancePrompts(payloads: QueueEnhancePromptPayload[])
 
             res.artifacts.forEach((image, index) => {
                 // writeFileSync(resolve(dirname(fileURLToPath(import.meta.url)), `output/${fileNamePrefix}_${index}.png`), Buffer.from(image.base64, 'base64'));
+                console.log(`[cloudinaryClient] uploading ${fileNamePrefix}..`);
+
                 cloudinaryClient.v2.uploader.upload(`data:image/jpeg;base64,${image.base64}`, {
                     async: true,
-                    filename_override: `${fileNamePrefix}_${index}.png`
+                    folder: 'schrodi-stories',
+                    public_id: `${fileNamePrefix}_${index}.png`
                 });
             });
         } catch (error) {
