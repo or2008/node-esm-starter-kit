@@ -142,8 +142,8 @@ const enhancePromptBatch = defaultEndpointsFactory
         input:
             z.object({
                 prompts: z.object({
-                    positivePrompt: z.string({ required_error: 'positivePrompt is required' }).max(500, 'Must be 500 or fewer characters long'),
-                    negativePrompt: z.string().max(500, 'Must be 500 or fewer characters long').optional(),
+                    positivePrompt: z.string({ required_error: 'positivePrompt is required' }).max(2000, 'Must be 2000 or fewer characters long'),
+                    negativePrompt: z.string().max(2000, 'Must be 2000 or fewer characters long').optional(),
                     stabilityAiTextToImageParams: z.any()
                 }).array()
             }),
