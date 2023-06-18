@@ -8,5 +8,5 @@ export interface NotifyWebhookPaylod {
 }
 export function notifyWebhook(payload: NotifyWebhookPaylod) {
     console.log(`[notify-webhook] Notifying with payload ${JSON.stringify(payload)}`);
-    post('https://api.schrodi.co/stable-update', payload);
+    post('https://api.schrodi.co/stable-update', JSON.stringify(payload));
 }
