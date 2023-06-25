@@ -19,7 +19,7 @@ type GetImageHelloResponse = {
     };
 };
 
-type PostImageEnhancePromptBatchInput = {
+type PostImageEnhanceText2ImgBatchInput = {
     prompts: {
         positivePrompt: string;
         negativePrompt?: string | undefined;
@@ -27,7 +27,28 @@ type PostImageEnhancePromptBatchInput = {
     }[];
 };
 
-type PostImageEnhancePromptBatchResponse = {
+type PostImageEnhanceText2ImgBatchResponse = {
+    status: "success";
+    data: {
+        id: string;
+    };
+} | {
+    status: "error";
+    error: {
+        message: string;
+    };
+};
+
+type PostImageEnhanceImg2ImgBatchInput = {
+    prompts: {
+        initImage: string;
+        positivePrompt: string;
+        negativePrompt?: string | undefined;
+        stabilityAiTextToImageParams?: any;
+    }[];
+};
+
+type PostImageEnhanceImg2ImgBatchResponse = {
     status: "success";
     data: {
         id: string;
@@ -60,7 +81,7 @@ type PostImagePromptResponse = {
     };
 };
 
-export type Path = "/docs/open-api" | "/image/hello" | "/image/enhance-prompt-batch" | "/image/view" | "/image/prompt";
+export type Path = "/docs/open-api" | "/image/hello" | "/image/enhance-text-2-img-batch" | "/image/enhance-img-2-img-batch" | "/image/view" | "/image/prompt";
 
 export type Method = "get" | "post" | "put" | "delete" | "patch";
 
@@ -69,7 +90,8 @@ export type MethodPath = `${Method} ${Path}`;
 export interface Input extends Record<MethodPath, any> {
     "get /docs/open-api": GetDocsOpenApiInput;
     "get /image/hello": GetImageHelloInput;
-    "post /image/enhance-prompt-batch": PostImageEnhancePromptBatchInput;
+    "post /image/enhance-text-2-img-batch": PostImageEnhanceText2ImgBatchInput;
+    "post /image/enhance-img-2-img-batch": PostImageEnhanceImg2ImgBatchInput;
     "get /image/view": GetImageViewInput;
     "post /image/prompt": PostImagePromptInput;
 }
@@ -77,12 +99,13 @@ export interface Input extends Record<MethodPath, any> {
 export interface Response extends Record<MethodPath, any> {
     "get /docs/open-api": GetDocsOpenApiResponse;
     "get /image/hello": GetImageHelloResponse;
-    "post /image/enhance-prompt-batch": PostImageEnhancePromptBatchResponse;
+    "post /image/enhance-text-2-img-batch": PostImageEnhanceText2ImgBatchResponse;
+    "post /image/enhance-img-2-img-batch": PostImageEnhanceImg2ImgBatchResponse;
     "get /image/view": GetImageViewResponse;
     "post /image/prompt": PostImagePromptResponse;
 }
 
-export const jsonEndpoints = { "get /docs/open-api": true, "get /image/hello": true, "post /image/enhance-prompt-batch": true, "post /image/prompt": true };
+export const jsonEndpoints = { "get /docs/open-api": true, "get /image/hello": true, "post /image/enhance-text-2-img-batch": true, "post /image/enhance-img-2-img-batch": true, "post /image/prompt": true };
 
 export type Provider = <M extends Method, P extends Path>(method: M, path: P, params: Input[`${M} ${P}`]) => Promise<Response[`${M} ${P}`]>;
 

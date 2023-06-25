@@ -1,12 +1,12 @@
 import { existsSync } from 'node:fs';
 
-import { z } from 'zod';
+import { string, z } from 'zod';
 import { createHttpError, ez } from 'express-zod-api';
 
 import defaultEndpointsFactory from '../endpoints-factory.js';
 import { authMiddleware } from '../middlewares/auth.js';
 import { fileStreamingEndpointsFactory } from '../endpoints-factory/file-streaming.js';
-import { queueEnhancePrompt, queueEnhancePrompts } from '../../modules/image/index.js';
+import { queueEnhanceImageToImagePrompts, queueEnhancePrompt, queueEnhanceTextToImagePrompts } from '../../modules/image/index.js';
 
 // export const router = Router();
 
@@ -134,7 +134,7 @@ const prompt = defaultEndpointsFactory
 //         },
 //     });
 
-const enhancePromptBatch = defaultEndpointsFactory
+const enhanceTextToImagePrompts = defaultEndpointsFactory
     // .addMiddleware(authMiddleware)
     .build({
         method: 'post',
@@ -155,7 +155,37 @@ const enhancePromptBatch = defaultEndpointsFactory
         handler: async ({ input: { prompts }, options, logger }) => {
             logger.debug('Options:', options); // middlewares provide options
             try {
-                const res = await queueEnhancePrompts(prompts);
+                const res = await queueEnhanceTextToImagePrompts(prompts);
+                return res;
+            } catch (error) {
+                throw createHttpError(400, 'Failed ' + error.message);
+            }
+        },
+    });
+
+
+const enhanceImageToImagePrompts = defaultEndpointsFactory
+    .build({
+        method: 'post',
+
+        input:
+            z.object({
+                prompts: z.object({
+                    initImage: z.string().url(),
+                    positivePrompt: z.string({ required_error: 'positivePrompt is required' }).max(2000, 'Must be 2000 or fewer characters long'),
+                    negativePrompt: z.string().max(2000, 'Must be 2000 or fewer characters long').optional(),
+                    stabilityAiTextToImageParams: z.any()
+                }).array()
+            }),
+
+        output: z.object({
+            id: z.string()
+        }),
+
+        handler: async ({ input: { prompts }, options, logger }) => {
+            logger.debug('Options:', options); // middlewares provide options
+            try {
+                const res = await queueEnhanceImageToImagePrompts(prompts);
                 return res;
             } catch (error) {
                 throw createHttpError(400, 'Failed ' + error.message);
@@ -166,7 +196,8 @@ const enhancePromptBatch = defaultEndpointsFactory
 
 const routes = {
     hello,
-    'enhance-prompt-batch': enhancePromptBatch,
+    'enhance-text-2-img-batch': enhanceTextToImagePrompts,
+    'enhance-img-2-img-batch': enhanceImageToImagePrompts,
     // 'view': {
     //     ':id': getImage
     // },

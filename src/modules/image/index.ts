@@ -3,23 +3,32 @@ import { randomNumber } from '../../utils/numbers.js';
 import { queuePrompt } from '../../services/comfy-ui/comfy-ui.js';
 import { enhancePrompts } from './enhance-prompt.js';
 import { v4 as uuidv4 } from 'uuid';
-import { StabilityAiTextToImageParams, generate } from '../../services/stability-ai/stability-ai.js';
+import { StabilityAiImageToImageParams, StabilityAiTextToImageParams, generate, imageToImage, textToImage } from '../../services/stability-ai/stability-ai.js';
 import { cloudinaryClient } from '../../services/cloudinary/cloudinary.js';
 import { notifyWebhook } from './ notify-webhook.js';
+import { get } from '../../services/network.js';
+import axios from 'axios';
 
 // export interface EnhancePromptOptions {
 //     //
 // }
 
-export interface QueueEnhancePromptPayload {
+export interface QueueEnhanceTextToImagePromptPayload {
     positivePrompt: string;
     negativePrompt?: string;
     filenamePrefix?: string;
     stabilityAiTextToImageParams?: StabilityAiTextToImageParams;
     // options?: EnhancePromptOptions;
 }
+export interface QueueEnhanceImageToImagePromptPayload {
+    initImage: string;
+    positivePrompt: string;
+    negativePrompt?: string;
+    stabilityAiImageToImageParams?: StabilityAiImageToImageParams;
+    // options?: EnhancePromptOptions;
+}
 
-export async function queueEnhancePrompt(payload: QueueEnhancePromptPayload) {
+export async function queueEnhancePrompt(payload: QueueEnhanceTextToImagePromptPayload) {
     const { positivePrompt, negativePrompt, extraData, filenamePrefix = '' } = payload;
 
     const comfyUiPositivePrompt = `best quality, masterpiece, detailed, ((modest)), ((Fully clothed, loose clothes)), (${positivePrompt}), Cute, 3D, studio lighting, minimal, Depth of field, dribbble, Behance, quasi-object, 16K`;
@@ -59,7 +68,7 @@ export async function queueEnhancePrompt(payload: QueueEnhancePromptPayload) {
     return queuePrompt({ prompt: comfyUiPrompt, extra_data: extraData });
 }
 
-// export async function queueEnhancePrompts(payloads: QueueEnhancePromptPayload[]) {
+// export async function queueEnhancePrompts(payloads: QueueEnhanceTextToImagePromptPayload[]) {
 //     const prompts = payloads.map(payload => payload.positivePrompt);
 //     const enhancedPrompts = await enhancePrompts(prompts);
 
@@ -77,7 +86,7 @@ export async function queueEnhancePrompt(payload: QueueEnhancePromptPayload) {
 //     return { id, comfyResponses };
 // }
 
-export async function queueEnhancePrompts(payloads: QueueEnhancePromptPayload[]) {
+export async function queueEnhanceTextToImagePrompts(payloads: QueueEnhanceTextToImagePromptPayload[]) {
     // const prompts = payloads.map(payload => payload.positivePrompt);
     // const enhancedPrompt = await enhancePrompts(prompts);
 
@@ -93,7 +102,49 @@ export async function queueEnhancePrompts(payloads: QueueEnhancePromptPayload[])
         };
         try {
             const fileNamePrefix = `${id}_${i}`;
-            const res = await generate(params);
+            const res = await textToImage(params);
+
+            res.artifacts.forEach((image, index) => {
+                // writeFileSync(resolve(dirname(fileURLToPath(import.meta.url)), `output/${fileNamePrefix}_${index}.png`), Buffer.from(image.base64, 'base64'));
+                console.log(`[cloudinaryClient] uploading ${fileNamePrefix}..`);
+
+                cloudinaryClient.v2.uploader.upload(`data:image/jpeg;base64,${image.base64}`, {
+                    async: true,
+                    folder: 'schrodi-stories',
+                    public_id: `${fileNamePrefix}_${index}`
+                });
+            });
+        } catch (error) {
+            console.error(error);
+            notifyWebhook({ id, error: error.message, data: null });
+        }
+    });
+
+    return { id };
+}
+
+
+export async function queueEnhanceImageToImagePrompts(payloads: QueueEnhanceImageToImagePromptPayload[]) {
+    const id = uuidv4();
+
+    payloads.forEach(async (payload, i) => {
+        const { positivePrompt,  stabilityAiImageToImageParams, initImage } = payload;
+        try {
+            const response = await axios.get(initImage, {
+                responseType: 'arraybuffer',
+            });
+            const buffer = Buffer.from(response.data);
+
+            const params: StabilityAiImageToImageParams = {
+                text_prompts: [{
+                    text: positivePrompt
+                }],
+                init_image: buffer,
+                ...stabilityAiImageToImageParams
+            };
+
+            const fileNamePrefix = `${id}_${i}`;
+            const res = await imageToImage(params);
 
             res.artifacts.forEach((image, index) => {
                 // writeFileSync(resolve(dirname(fileURLToPath(import.meta.url)), `output/${fileNamePrefix}_${index}.png`), Buffer.from(image.base64, 'base64'));

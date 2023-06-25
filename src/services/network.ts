@@ -12,7 +12,7 @@ export async function get<T>(url: string, queryParams = {}, headers = {} as Axio
 }
 
 export async function post<T>(url: string, data = {}, headers = {}) {
-    console.log(`POST ${url}`, {data, headers});
+    // console.log(`POST ${url}`, {data, headers});
 
     return fetch(url, {
         'headers': {
@@ -26,42 +26,3 @@ export async function post<T>(url: string, data = {}, headers = {}) {
         'method': 'POST'
     });
 }
-
-// export async function post(path = '/', body = {}, headers = {}, useConfigBase = true): Promise<{ data: any; headers: any }> {
-//     const config = {
-//         headers: {
-//             'X-Context-ID': getContextId(),
-//             ...headers
-//         }
-//     };
-//     try {
-//         const res = await axios.post(getBaseUrl(useConfigBase) + path, body, config);
-//         const result = res.data;
-
-//         if (result.status === 'error')
-//             throw new Error(result.message);
-
-//         return { data: result, headers: res.headers };
-//     }
-//     catch (error: any) {
-//         const message = error.response && error.response.data.message ? error.response.data.message : error.message;
-//         throw new Error(message);
-//     }
-// }
-
-// export async function put(path = '/', body = {}): Promise<{ data: any; headers: any }> {
-//     const config = {
-//         headers: {
-//             'X-Context-ID': getContextId()
-//         }
-//     };
-
-//     return axios.put(getBaseUrl() + path, body, config)
-//         .then(result => {
-//             const res = result.data;
-//             if (res.errorCode)
-//                 throw new Error(res.errorCode);
-
-//             return { data: res.data, headers: result.headers };
-//         });
-// }
