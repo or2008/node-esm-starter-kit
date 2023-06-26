@@ -85,7 +85,6 @@ export async function queueEnhancePrompt(payload: QueueEnhanceTextToImagePromptP
 
 //     return { id, comfyResponses };
 // }
-
 export async function queueEnhanceTextToImagePrompts(payloads: QueueEnhanceTextToImagePromptPayload[]) {
     // const prompts = payloads.map(payload => payload.positivePrompt);
     // const enhancedPrompt = await enhancePrompts(prompts);
@@ -109,9 +108,11 @@ export async function queueEnhanceTextToImagePrompts(payloads: QueueEnhanceTextT
                 console.log(`[cloudinaryClient] uploading ${fileNamePrefix}..`);
 
                 cloudinaryClient.v2.uploader.upload(`data:image/jpeg;base64,${image.base64}`, {
-                    async: true,
+                    async: false,
                     folder: 'schrodi-stories',
                     public_id: `${fileNamePrefix}_${index}`
+                }, (error, callResult) => {
+                    notifyWebhook({ id, error: error?.message, data: callResult });
                 });
             });
         } catch (error) {
