@@ -128,7 +128,7 @@ export async function queueEnhanceImageToImagePrompts(payloads: QueueEnhanceImag
     const id = uuidv4();
 
     payloads.forEach(async (payload, i) => {
-        const { positivePrompt,  stabilityAiImageToImageParams, initImage } = payload;
+        const { positivePrompt, stabilityAiImageToImageParams, initImage } = payload;
         try {
             const response = await axios.get(initImage, {
                 responseType: 'arraybuffer',
@@ -151,9 +151,11 @@ export async function queueEnhanceImageToImagePrompts(payloads: QueueEnhanceImag
                 console.log(`[cloudinaryClient] uploading ${fileNamePrefix}..`);
 
                 cloudinaryClient.v2.uploader.upload(`data:image/jpeg;base64,${image.base64}`, {
-                    async: true,
+                    async: false,
                     folder: 'schrodi-stories',
                     public_id: `${fileNamePrefix}_${index}`
+                }, (error, callResult) => {
+                    notifyWebhook({ id, error: error?.message, data: callResult });
                 });
             });
         } catch (error) {
