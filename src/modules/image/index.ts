@@ -14,6 +14,7 @@ import axios from 'axios';
 // }
 
 export interface QueueEnhanceTextToImagePromptPayload {
+    engineId: string;
     positivePrompt: string;
     negativePrompt?: string;
     filenamePrefix?: string;
@@ -21,6 +22,7 @@ export interface QueueEnhanceTextToImagePromptPayload {
     // options?: EnhancePromptOptions;
 }
 export interface QueueEnhanceImageToImagePromptPayload {
+    engineId: string;
     initImage: string;
     positivePrompt: string;
     negativePrompt?: string;
@@ -92,7 +94,7 @@ export async function queueEnhanceTextToImagePrompts(payloads: QueueEnhanceTextT
     const id = uuidv4();
 
     payloads.forEach(async (payload, i) => {
-        const { positivePrompt, negativePrompt, stabilityAiTextToImageParams } = payload;
+        const { positivePrompt, negativePrompt, stabilityAiTextToImageParams, engineId } = payload;
         const params: StabilityAiTextToImageParams = {
             text_prompts: [{
                 text: positivePrompt
@@ -101,7 +103,7 @@ export async function queueEnhanceTextToImagePrompts(payloads: QueueEnhanceTextT
         };
         try {
             const fileNamePrefix = `${id}_${i}`;
-            const res = await textToImage(params);
+            const res = await textToImage(engineId, params);
 
             res.artifacts.forEach((image, index) => {
                 // writeFileSync(resolve(dirname(fileURLToPath(import.meta.url)), `output/${fileNamePrefix}_${index}.png`), Buffer.from(image.base64, 'base64'));
@@ -129,12 +131,13 @@ export async function queueEnhanceImageToImagePrompts(payloads: QueueEnhanceImag
     const id = uuidv4();
 
     payloads.forEach(async (payload, i) => {
-        const { positivePrompt, stabilityAiImageToImageParams, initImage } = payload;
+        const { engineId, positivePrompt, stabilityAiImageToImageParams, initImage } = payload;
         try {
             const response = await axios.get(initImage, {
                 responseType: 'arraybuffer',
             });
             const buffer = Buffer.from(response.data);
+            console.log();
 
             const params: StabilityAiImageToImageParams = {
                 text_prompts: [{
@@ -145,7 +148,7 @@ export async function queueEnhanceImageToImagePrompts(payloads: QueueEnhanceImag
             };
 
             const fileNamePrefix = `${id}_${i}`;
-            const res = await imageToImage(params);
+            const res = await imageToImage(engineId, params);
 
             res.artifacts.forEach((image, index) => {
                 // writeFileSync(resolve(dirname(fileURLToPath(import.meta.url)), `output/${fileNamePrefix}_${index}.png`), Buffer.from(image.base64, 'base64'));

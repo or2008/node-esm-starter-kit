@@ -142,7 +142,8 @@ const enhanceTextToImagePrompts = defaultEndpointsFactory
         input:
             z.object({
                 prompts: z.object({
-                    positivePrompt: z.string({ required_error: 'positivePrompt is required' }).max(2000, 'Must be 2000 or fewer characters long'),
+                    engineId: z.string(),
+                    positivePrompt: z.string().max(2000, 'Must be 2000 or fewer characters long'),
                     negativePrompt: z.string().max(2000, 'Must be 2000 or fewer characters long').optional(),
                     stabilityAiTextToImageParams: z.any()
                 }).array()
@@ -171,8 +172,9 @@ const enhanceImageToImagePrompts = defaultEndpointsFactory
         input:
             z.object({
                 prompts: z.object({
+                    engineId: z.string(),
                     initImage: z.string().url(),
-                    positivePrompt: z.string({ required_error: 'positivePrompt is required' }).max(2000, 'Must be 2000 or fewer characters long'),
+                    positivePrompt: z.string().max(2000, 'Must be 2000 or fewer characters long'),
                     negativePrompt: z.string().max(2000, 'Must be 2000 or fewer characters long').optional(),
                     stabilityAiTextToImageParams: z.any()
                 }).array()

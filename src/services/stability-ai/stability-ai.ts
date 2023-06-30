@@ -35,8 +35,6 @@ export interface StabilityAiImageToImageParams {
 
 }
 
-// const engineId = 'stable-diffusion-v1-5';
-const engineId = 'stable-diffusion-xl-beta-v2-2-2';
 const apiHost = process.env.API_HOST ?? 'https://api.stability.ai';
 const apiKey = process.env.STABILITYAI_API_KEY;
 
@@ -48,7 +46,7 @@ interface GenerationResponse {
     }>
 }
 
-export async function textToImage(params: StabilityAiTextToImageParams) {
+export async function textToImage(engineId: string, params: StabilityAiTextToImageParams) {
     const body = Object.assign({}, {
         cfg_scale: 7,
         clip_guidance_preset: 'FAST_BLUE',
@@ -57,7 +55,9 @@ export async function textToImage(params: StabilityAiTextToImageParams) {
         samples: 1,
         steps: 30,
     }, params);
-    console.log(`[stability-ai] generating text-to-image with the following body request: ${JSON.stringify(body)}`);
+
+    console.log('[stability-ai] generating text-to-image with the following body request:');
+    console.log(`POST ${apiHost}/v1/generation/${engineId}/image-to-image ${JSON.stringify(body)}`);
 
     try {
         const res = await post(`${apiHost}/v1/generation/${engineId}/text-to-image`,
@@ -77,7 +77,7 @@ export async function textToImage(params: StabilityAiTextToImageParams) {
     }
 }
 
-export async function imageToImage(params: StabilityAiImageToImageParams) {
+export async function imageToImage(engineId: string, params: StabilityAiImageToImageParams) {
     const body = Object.assign({}, {
         'init_image': params.init_image,
         'image_strength': 0.35,
@@ -113,7 +113,8 @@ export async function imageToImage(params: StabilityAiImageToImageParams) {
     // formData.append('steps', 30);
 
 
-    console.log(`[stability-ai] generating image-to-image with the following body request ${JSON.stringify(body)}`);
+    console.log('[stability-ai] generating text-to-image with the following body request:');
+    console.log(`POST ${apiHost}/v1/generation/${engineId}/image-to-image ${JSON.stringify(body)}`);
 
     try {
         const res = await axios.post(`${apiHost}/v1/generation/${engineId}/image-to-image`,

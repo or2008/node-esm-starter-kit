@@ -21,6 +21,7 @@ type GetImageHelloResponse = {
 
 type PostImageEnhanceText2ImgBatchInput = {
     prompts: {
+        engineId: string;
         positivePrompt: string;
         negativePrompt?: string | undefined;
         stabilityAiTextToImageParams?: any;
@@ -41,6 +42,7 @@ type PostImageEnhanceText2ImgBatchResponse = {
 
 type PostImageEnhanceImg2ImgBatchInput = {
     prompts: {
+        engineId: string;
         initImage: string;
         positivePrompt: string;
         negativePrompt?: string | undefined;
