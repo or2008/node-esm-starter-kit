@@ -35,7 +35,7 @@ export interface StabilityAiImageToImageParams {
 
 }
 
-const apiHost = process.env.API_HOST ?? 'https://api.stability.ai';
+const apiHost = 'https://api.stability.ai';
 const apiKey = process.env.STABILITYAI_API_KEY;
 
 interface GenerationResponse {
@@ -68,11 +68,14 @@ export async function textToImage(engineId: string, params: StabilityAiTextToIma
         );
 
         const resJSON = (await res.json()) as GenerationResponse;
+        console.log(resJSON);
 
         if (!resJSON.artifacts) throw new Error(resJSON.message);
 
         return resJSON;
     } catch (error) {
+        console.error(error);
+
         throw new Error(error.message);
     }
 }

@@ -5,9 +5,9 @@ import { enhancePrompts } from './enhance-prompt.js';
 import { v4 as uuidv4 } from 'uuid';
 import { StabilityAiImageToImageParams, StabilityAiTextToImageParams, generate, imageToImage, textToImage } from '../../services/stability-ai/stability-ai.js';
 import { cloudinaryClient } from '../../services/cloudinary/cloudinary.js';
-import { notifyWebhook } from './ notify-webhook.js';
 import { get } from '../../services/network.js';
 import axios from 'axios';
+import { notifyWebhook } from '../ notify-webhook.js';
 
 // export interface EnhancePromptOptions {
 //     //

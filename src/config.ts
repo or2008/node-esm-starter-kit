@@ -46,4 +46,9 @@ export function getCloudinaryApiKey() {
 
 export function getCloudinaryApiSecret() {
     return process.env.CLOUDINARY_API_SECRET;
+
+}
+
+export function getElevenlabsApiKey() {
+    return process.env.ELEVENLABS_API_KEY;
 }

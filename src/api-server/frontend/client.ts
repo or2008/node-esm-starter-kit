@@ -83,7 +83,44 @@ type PostImagePromptResponse = {
     };
 };
 
-export type Path = "/docs/open-api" | "/image/hello" | "/image/enhance-text-2-img-batch" | "/image/enhance-img-2-img-batch" | "/image/view" | "/image/prompt";
+type GetVoiceHelloInput = {
+    name?: string | undefined;
+};
+
+type GetVoiceHelloResponse = {
+    status: "success";
+    data: {
+        greetings: string;
+        createdAt: string;
+    };
+} | {
+    status: "error";
+    error: {
+        message: string;
+    };
+};
+
+type PostVoiceEnhanceText2SpeechBatchInput = {
+    prompts: {
+        voiceId: string;
+        text: string;
+        elevenlabsTextToSpeechParams?: any;
+    }[];
+};
+
+type PostVoiceEnhanceText2SpeechBatchResponse = {
+    status: "success";
+    data: {
+        id: string;
+    };
+} | {
+    status: "error";
+    error: {
+        message: string;
+    };
+};
+
+export type Path = "/docs/open-api" | "/image/hello" | "/image/enhance-text-2-img-batch" | "/image/enhance-img-2-img-batch" | "/image/view" | "/image/prompt" | "/voice/hello" | "/voice/enhance-text-2-speech-batch";
 
 export type Method = "get" | "post" | "put" | "delete" | "patch";
 
@@ -96,6 +133,8 @@ export interface Input extends Record<MethodPath, any> {
     "post /image/enhance-img-2-img-batch": PostImageEnhanceImg2ImgBatchInput;
     "get /image/view": GetImageViewInput;
     "post /image/prompt": PostImagePromptInput;
+    "get /voice/hello": GetVoiceHelloInput;
+    "post /voice/enhance-text-2-speech-batch": PostVoiceEnhanceText2SpeechBatchInput;
 }
 
 export interface Response extends Record<MethodPath, any> {
@@ -105,9 +144,11 @@ export interface Response extends Record<MethodPath, any> {
     "post /image/enhance-img-2-img-batch": PostImageEnhanceImg2ImgBatchResponse;
     "get /image/view": GetImageViewResponse;
     "post /image/prompt": PostImagePromptResponse;
+    "get /voice/hello": GetVoiceHelloResponse;
+    "post /voice/enhance-text-2-speech-batch": PostVoiceEnhanceText2SpeechBatchResponse;
 }
 
-export const jsonEndpoints = { "get /docs/open-api": true, "get /image/hello": true, "post /image/enhance-text-2-img-batch": true, "post /image/enhance-img-2-img-batch": true, "post /image/prompt": true };
+export const jsonEndpoints = { "get /docs/open-api": true, "get /image/hello": true, "post /image/enhance-text-2-img-batch": true, "post /image/enhance-img-2-img-batch": true, "post /image/prompt": true, "get /voice/hello": true, "post /voice/enhance-text-2-speech-batch": true };
 
 export type Provider = <M extends Method, P extends Path>(method: M, path: P, params: Input[`${M} ${P}`]) => Promise<Response[`${M} ${P}`]>;
 

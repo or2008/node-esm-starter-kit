@@ -11,6 +11,7 @@ declare global {
             NLPCLOUD_API_KEY: string;
             OPENAI_API_KEY: string;
             STABILITYAI_API_KEY: string;
+            ELEVENLABS_API_KEY: string;
             CLOUDINARY_API_KEY: string;
             CLOUDINARY_API_SECRET: string;
             DATABASE_URL: string;

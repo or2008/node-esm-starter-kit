@@ -2,7 +2,7 @@ import type WebSocket from 'ws';
 import { get, post } from '../network.js';
 import { createWebSocket } from '../ws/ws.js';
 import { logger } from '../logger.js';
-import { notifyWebhook } from '../../modules/image/ notify-webhook.js';
+import { notifyWebhook } from '../../modules/ notify-webhook.js';
 
 let ws: WebSocket | null = null;
 let clientId = '32371c472bf0441da26c154deed68d91';

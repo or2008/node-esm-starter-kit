@@ -1,4 +1,4 @@
-import { post } from '../../services/network.js';
+import { post } from '../services/network.js';
 
 
 export interface NotifyWebhookPaylod {
