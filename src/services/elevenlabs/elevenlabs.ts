@@ -1,7 +1,9 @@
 import { post } from '../network.js';
 import { convertObjectToFormData } from '../../utils/form-data.js';
-import axios from 'axios';
+import axios, { Method } from 'axios';
 import { createWriteStream } from 'fs';
+import { ensureStartsWithSlash } from '../../utils/string.js';
+import { logger } from '../logger.js';
 
 export interface ElevenlabsAiTextToSpeechVoiceSettings {
     stability: number,
@@ -33,8 +35,8 @@ export async function textToSpeech(voiceId: string, text: string, params?: Eleve
         text,
     }, params) as ElevenlabsAiTextToSpeechParams;
 
-    console.log('[stability-ai] generating text-to-speech with the following body request:');
-    console.log(`POST ${apiHost}/v1/text-to-speech/${voiceId} ${JSON.stringify(body)}`);
+    logger.debug('[elevenlabs] generating text-to-speech with the following body request:');
+    logger.debug(`POST ${apiHost}/v1/text-to-speech/${voiceId} ${JSON.stringify(body)}`);
 
     try {
         const response = await axios({
@@ -51,14 +53,44 @@ export async function textToSpeech(voiceId: string, text: string, params?: Eleve
 
         return response;
         // const resJSON = (await res.json()) as GenerationResponse;
-        // console.log(resJSON);
+        // logger.debug(resJSON);
 
         // if (!resJSON.artifacts) throw new Error(resJSON.message);
 
         // return resJSON;
     } catch (error) {
-        console.error(error);
+        logger.error(error.message);
+        throw new Error(error.message);
+    }
+}
 
+export async function callApi(method: Method, path: string, payload = {}, headers = {}) {
+    logger.debug(`[elevenlabs/callApi] ${method} ${apiHost}${path} with payload: ${JSON.stringify(payload)} and headers: ${JSON.stringify(headers)}`);
+    try {
+        const response = await axios({
+            method,
+            // method: 'GET',
+            url: `${apiHost}${path}`,
+            data: method !== 'GET' ? payload : undefined,
+            headers: {
+                'accept': 'application/json',
+                'xi-api-key': apiKey,
+                // 'Content-Type': 'application/json',
+                ...headers
+            }
+        });
+
+        logger.debug(`[elevenlabs/callApi] response: ${JSON.stringify(response.data)}`);
+
+        return response.data;
+        // const resJSON = (await res.json()) as GenerationResponse;
+        // logger.debug(resJSON);
+
+        // if (!resJSON.artifacts) throw new Error(resJSON.message);
+
+        // return resJSON;
+    } catch (error) {
+        logger.error(error.message);
         throw new Error(error.message);
     }
 }

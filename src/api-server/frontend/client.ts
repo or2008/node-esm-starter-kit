@@ -120,7 +120,24 @@ type PostVoiceEnhanceText2SpeechBatchResponse = {
     };
 };
 
-export type Path = "/docs/open-api" | "/image/hello" | "/image/enhance-text-2-img-batch" | "/image/enhance-img-2-img-batch" | "/image/view" | "/image/prompt" | "/voice/hello" | "/voice/enhance-text-2-speech-batch";
+type PostVoiceElevenlabsProxyInput = {
+    method: "GET" | "POST" | "DELETE" | "PUT";
+    path: string;
+    payload?: any;
+    headers?: any;
+};
+
+type PostVoiceElevenlabsProxyResponse = {
+    status: "success";
+    data?: any;
+} | {
+    status: "error";
+    error: {
+        message: string;
+    };
+};
+
+export type Path = "/docs/open-api" | "/image/hello" | "/image/enhance-text-2-img-batch" | "/image/enhance-img-2-img-batch" | "/image/view" | "/image/prompt" | "/voice/hello" | "/voice/enhance-text-2-speech-batch" | "/voice/elevenlabs-proxy";
 
 export type Method = "get" | "post" | "put" | "delete" | "patch";
 
@@ -135,6 +152,7 @@ export interface Input extends Record<MethodPath, any> {
     "post /image/prompt": PostImagePromptInput;
     "get /voice/hello": GetVoiceHelloInput;
     "post /voice/enhance-text-2-speech-batch": PostVoiceEnhanceText2SpeechBatchInput;
+    "post /voice/elevenlabs-proxy": PostVoiceElevenlabsProxyInput;
 }
 
 export interface Response extends Record<MethodPath, any> {
@@ -146,9 +164,10 @@ export interface Response extends Record<MethodPath, any> {
     "post /image/prompt": PostImagePromptResponse;
     "get /voice/hello": GetVoiceHelloResponse;
     "post /voice/enhance-text-2-speech-batch": PostVoiceEnhanceText2SpeechBatchResponse;
+    "post /voice/elevenlabs-proxy": PostVoiceElevenlabsProxyResponse;
 }
 
-export const jsonEndpoints = { "get /docs/open-api": true, "get /image/hello": true, "post /image/enhance-text-2-img-batch": true, "post /image/enhance-img-2-img-batch": true, "post /image/prompt": true, "get /voice/hello": true, "post /voice/enhance-text-2-speech-batch": true };
+export const jsonEndpoints = { "get /docs/open-api": true, "get /image/hello": true, "post /image/enhance-text-2-img-batch": true, "post /image/enhance-img-2-img-batch": true, "post /image/prompt": true, "get /voice/hello": true, "post /voice/enhance-text-2-speech-batch": true, "post /voice/elevenlabs-proxy": true };
 
 export type Provider = <M extends Method, P extends Path>(method: M, path: P, params: Input[`${M} ${P}`]) => Promise<Response[`${M} ${P}`]>;
 

@@ -1,3 +1,3 @@
 
 
-export {defaultEndpointsFactory as default} from 'express-zod-api';
+export { defaultEndpointsFactory as default } from 'express-zod-api';

@@ -20,7 +20,6 @@ export async function queueEnhanceTextToSpeechPrompts(payloads: QueueEnhanceText
             const fileNamePrefix = `${id}_${i}`;
             const res = await textToSpeech(voiceId, text, elevenlabsTextToSpeechParams);
 
-
             console.log(`[cloudinaryClient] uploading ${fileNamePrefix}..`);
 
             const uploadStream = cloudinaryClient.v2.uploader.upload_stream({

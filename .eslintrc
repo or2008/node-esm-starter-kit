@@ -36,7 +36,7 @@
         "@typescript-eslint/semi": "error",
         // "@typescript-eslint/member-delimiter-style": "error",
         // "etc/no-t": "off",
-        "max-len": ["error", { "ignoreComments": true, "code": 150 }],
+        "max-len": ["error", { "ignoreComments": true, "code": 160 }],
         // "max-statements": ["error", 14],
         // "no-new": "off",
         // "promise/avoid-new": "off",

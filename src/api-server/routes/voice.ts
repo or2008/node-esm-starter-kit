@@ -1,9 +1,11 @@
 
 import { z } from 'zod';
-import { createHttpError, ez } from 'express-zod-api';
+import { DependsOnMethod, createHttpError, ez } from 'express-zod-api';
 
 import defaultEndpointsFactory from '../endpoints-factory.js';
 import { queueEnhanceTextToSpeechPrompts } from '../../modules/voice/index.js';
+import { proxyEndpointsFactory } from '../endpoints-factory/proxy.js';
+import { callApi } from '../../services/elevenlabs/elevenlabs.js';
 
 
 const hello = defaultEndpointsFactory.build({
@@ -27,7 +29,6 @@ const hello = defaultEndpointsFactory.build({
 
 
 const enhanceTextToSpeechPrompts = defaultEndpointsFactory
-    // .addMiddleware(authMiddleware)
     .build({
         method: 'post',
 
@@ -56,8 +57,34 @@ const enhanceTextToSpeechPrompts = defaultEndpointsFactory
     });
 
 
+const elevenlabsProxy = defaultEndpointsFactory
+    .build({
+        method: 'post',
+
+        input: z.object({
+            method: z.enum(['GET', 'POST', 'DELETE', 'PUT']),
+            path: z.string().regex(/^\/[a-zA-Z0-9_-]+(?:\/[a-zA-Z0-9_-]+)*(?:\?[a-zA-Z0-9_\-=&]+)?$/),
+            payload: z.any(),
+            headers: z.any()
+        }),
+
+        output: z.any(),
+
+        handler: async ({ input, options, logger }) => {
+            const { path, method, payload = {}, headers = {} } = input;
+            logger.debug('elevenlabsProxy:', options); // middlewares provide options
+            try {
+                const data = await callApi(method, path, payload, headers);
+                return { data };
+            } catch (error) {
+                throw createHttpError(400, 'Failed ' + error.message);
+            }
+        }
+    });
+
 const routes = {
     hello,
     'enhance-text-2-speech-batch': enhanceTextToSpeechPrompts,
+    'elevenlabs-proxy': elevenlabsProxy
 };
 export default routes;
