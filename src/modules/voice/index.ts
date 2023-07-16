@@ -3,6 +3,7 @@ import { StabilityAiTextToImageParams, textToImage } from '../../services/stabil
 import { cloudinaryClient } from '../../services/cloudinary/cloudinary.js';
 import { notifyWebhook } from '../ notify-webhook.js';
 import { ElevenlabsAiTextToSpeechParams, textToSpeech } from '../../services/elevenlabs/elevenlabs.js';
+import { logger } from '../../services/logger.js';
 
 
 export interface QueueEnhanceTextToSpeechPromptPayload {
@@ -37,7 +38,7 @@ export async function queueEnhanceTextToSpeechPrompts(payloads: QueueEnhanceText
 
 
         } catch (error) {
-            console.error(error);
+            logger.error(error.message);
             notifyWebhook({ id, error: error.message, data: null });
         }
     });

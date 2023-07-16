@@ -8,6 +8,7 @@ import { cloudinaryClient } from '../../services/cloudinary/cloudinary.js';
 import { get } from '../../services/network.js';
 import axios from 'axios';
 import { notifyWebhook } from '../ notify-webhook.js';
+import { logger } from '../../services/logger.js';
 
 // export interface EnhancePromptOptions {
 //     //
@@ -118,7 +119,7 @@ export async function queueEnhanceTextToImagePrompts(payloads: QueueEnhanceTextT
                 });
             });
         } catch (error) {
-            console.error(error);
+            logger.error(error.message);
             notifyWebhook({ id, error: error.message, data: null });
         }
     });
@@ -163,7 +164,7 @@ export async function queueEnhanceImageToImagePrompts(payloads: QueueEnhanceImag
                 });
             });
         } catch (error) {
-            console.error(error);
+            logger.error(error.message);
             notifyWebhook({ id, error: error.message, data: null });
         }
     });

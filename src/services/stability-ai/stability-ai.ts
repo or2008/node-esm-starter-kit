@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import FormData from 'form-data';
 import { convertObjectToFormData, convertToFormData, serialize } from '../../utils/form-data.js';
 import axios from 'axios';
+import { logger } from '../logger.js';
 
 export interface StabilityAiTextToImageParams {
     text_prompts: { text: string, weight?: number }[],
@@ -74,8 +75,7 @@ export async function textToImage(engineId: string, params: StabilityAiTextToIma
 
         return resJSON;
     } catch (error) {
-        console.error(error);
-
+        logger.error(error.message);
         throw new Error(error.message);
     }
 }
@@ -140,7 +140,7 @@ export async function imageToImage(engineId: string, params: StabilityAiImageToI
 
         return res.data;
     } catch (error) {
-        console.error(error);
+        logger.error(error.message);
 
         throw new Error(error.message);
     }
