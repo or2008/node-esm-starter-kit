@@ -48,7 +48,6 @@ export async function queueEnhanceTextToSpeechPrompts(payloads: QueueEnhanceText
 }
 
 export async function cloneVoice(text: string, voiceUrls: string[]) {
-    const voiceId = 'llalaa';
     const voiceName = 'tempLala';
 
     const voiceFilesTasks = voiceUrls.map(async url => {
