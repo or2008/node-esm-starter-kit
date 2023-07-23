@@ -15,6 +15,7 @@ export function convertObjectToFormData(obj: Record<string, any>): FormData {
             formData.append(key, obj[key]);
         }
     }
+    console.log(formData);
 
     return formData;
 }

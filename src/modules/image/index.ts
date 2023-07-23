@@ -138,7 +138,6 @@ export async function queueEnhanceImageToImagePrompts(payloads: QueueEnhanceImag
                 responseType: 'arraybuffer',
             });
             const buffer = Buffer.from(response.data);
-            console.log();
 
             const params: StabilityAiImageToImageParams = {
                 text_prompts: [{

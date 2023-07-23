@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { DependsOnMethod, createHttpError, ez } from 'express-zod-api';
 
 import defaultEndpointsFactory from '../endpoints-factory.js';
-import { queueEnhanceTextToSpeechPrompts } from '../../modules/voice/index.js';
+import { cloneVoice, queueEnhanceTextToSpeechPrompts } from '../../modules/voice/index.js';
 import { proxyEndpointsFactory } from '../endpoints-factory/proxy.js';
 import { callApi } from '../../services/elevenlabs/elevenlabs.js';
 
@@ -56,6 +56,31 @@ const enhanceTextToSpeechPrompts = defaultEndpointsFactory
         },
     });
 
+const clone = defaultEndpointsFactory
+    .build({
+        method: 'post',
+
+        input:
+            z.object({
+                text: z.string().max(100000, 'Must be 100,000 or fewer characters long'),
+                voiceUrls: z.string().array()
+            }),
+
+        output: z.object({
+            id: z.string()
+        }),
+
+        handler: async ({ input: { text, voiceUrls }, options, logger }) => {
+            logger.debug('Options:', options); // middlewares provide options
+            try {
+                const res = await cloneVoice(text, voiceUrls);
+                return res;
+            } catch (error) {
+                throw createHttpError(400, 'Failed ' + error.message);
+            }
+        },
+    });
+
 
 const elevenlabsProxy = defaultEndpointsFactory
     .build({
@@ -85,6 +110,7 @@ const elevenlabsProxy = defaultEndpointsFactory
 const routes = {
     hello,
     'enhance-text-2-speech-batch': enhanceTextToSpeechPrompts,
+    'clone': clone,
     'elevenlabs-proxy': elevenlabsProxy
 };
 export default routes;

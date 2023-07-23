@@ -69,7 +69,6 @@ export async function callApi(method: Method, path: string, payload = {}, header
     try {
         const response = await axios({
             method,
-            // method: 'GET',
             url: `${apiHost}${path}`,
             data: method !== 'GET' ? payload : undefined,
             headers: {

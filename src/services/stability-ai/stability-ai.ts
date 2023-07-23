@@ -1,9 +1,5 @@
-import { writeFileSync } from 'node:fs';
-import { get, post } from '../network.js';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import FormData from 'form-data';
-import { convertObjectToFormData, convertToFormData, serialize } from '../../utils/form-data.js';
+import { post } from '../network.js';
+import { convertObjectToFormData } from '../../utils/form-data.js';
 import axios from 'axios';
 import { logger } from '../logger.js';
 
