@@ -36,7 +36,7 @@ export async function textToSpeech(voiceId: string, text: string, params?: Eleve
     }, params) as ElevenlabsAiTextToSpeechParams;
 
     logger.debug('[elevenlabs] generating text-to-speech with the following body request:');
-    logger.debug(`POST ${apiHost}/v1/text-to-speech/${voiceId} ${JSON.stringify(body)}`);
+    logger.debug(`POST ${apiHost}/v1/text-to-speech/${voiceId}`);
 
     try {
         const response = await axios({

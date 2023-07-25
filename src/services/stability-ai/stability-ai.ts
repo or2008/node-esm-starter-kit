@@ -54,7 +54,7 @@ export async function textToImage(engineId: string, params: StabilityAiTextToIma
     }, params);
 
     console.log('[stability-ai] generating text-to-image with the following body request:');
-    console.log(`POST ${apiHost}/v1/generation/${engineId}/image-to-image ${JSON.stringify(body)}`);
+    console.log(`POST ${apiHost}/v1/generation/${engineId}/image-to-image`);
 
     try {
         const res = await post(`${apiHost}/v1/generation/${engineId}/text-to-image`,
