@@ -65,7 +65,7 @@ export async function textToSpeech(voiceId: string, text: string, params?: Eleve
 }
 
 export async function callApi(method: Method, path: string, payload = {}, headers = {}) {
-    logger.debug(`[elevenlabs/callApi] ${method} ${apiHost}${path} with payload: ${JSON.stringify(payload)} and headers: ${JSON.stringify(headers)}`);
+    logger.debug(`[elevenlabs/callApi] ${method} ${apiHost}${path} with payload:  and headers: ${JSON.stringify(headers)}`);
     try {
         const response = await axios({
             method,
