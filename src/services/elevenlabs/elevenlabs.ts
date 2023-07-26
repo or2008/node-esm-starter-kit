@@ -31,7 +31,7 @@ interface GenerationResponse {
 
 export async function textToSpeech(voiceId: string, text: string, params?: ElevenlabsAiTextToSpeechParams) {
     const body = Object.assign({}, {
-        // model_id: 'eleven_monolingual_v1',
+        model_id: 'eleven_monolingual_v1',
         text,
     }, params) as ElevenlabsAiTextToSpeechParams;
 
@@ -59,7 +59,7 @@ export async function textToSpeech(voiceId: string, text: string, params?: Eleve
 
         // return resJSON;
     } catch (error) {
-        logger.error(error.message);
+        logger.error(error);
         throw new Error(error.message);
     }
 }

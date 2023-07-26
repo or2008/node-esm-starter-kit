@@ -36,8 +36,6 @@ export async function queueEnhanceTextToSpeechPrompts(payloads: QueueEnhanceText
             });
 
             res.data.pipe(uploadStream);
-
-
         } catch (error) {
             logger.error(error.message);
             notifyWebhook({ id, error: error.message, data: null });
@@ -63,6 +61,7 @@ export async function cloneVoice(text: string, voiceUrls: string[]) {
     try {
         const formData = new FormData();
         formData.append('name', voiceName);
+        formData.append('description', voiceName);
         voiceFiles.forEach(file => {
             formData.append('files', file, { contentType: 'audio/mpeg', filename: 'or_voice.mp3' });
         });
@@ -86,7 +85,10 @@ export async function cloneVoice(text: string, voiceUrls: string[]) {
             voiceId: voice_id
         }]);
 
-        const deleteRes = callApi('DELETE', `/v1/voices/${voice_id}`);
+        setTimeout(() => {
+            const deleteRes = callApi('DELETE', `/v1/voices/${voice_id}`);
+        }, 5000);
+
         return text2speechRes;
     } catch (error) {
         logger.error(error.message);
@@ -95,5 +97,3 @@ export async function cloneVoice(text: string, voiceUrls: string[]) {
     }
 
 }
-
-
